@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Input from '../common/Input'
 import TextArea from '../common/TextArea'
 import Select from '../common/Select'
@@ -27,6 +27,34 @@ function InputForm({ onGenerate, isGenerating }) {
     })
 
     const [errors, setErrors] = useState({})
+    const dateInputRef = useRef(null)
+
+    // 初始化 jQuery UI Datepicker
+    useEffect(() => {
+        const $ = window.jQuery
+        if ($ && dateInputRef.current) {
+            $(dateInputRef.current).datepicker({
+                dateFormat: 'yy-mm-dd',
+                onSelect: (dateText) => {
+                    handleChange('date', dateText)
+                }
+            })
+        }
+
+        // 清理函數
+        return () => {
+            if ($ && dateInputRef.current) {
+                // 檢查 datepicker 是否已初始化，避免銷毀錯誤
+                try {
+                    if ($(dateInputRef.current).hasClass('hasDatepicker')) {
+                        $(dateInputRef.current).datepicker('destroy');
+                    }
+                } catch (e) {
+                    console.warn('Datepicker destroy failed', e);
+                }
+            }
+        }
+    }, [])
 
     const handleChange = (field, value) => {
         setFormData(prev => ({
@@ -96,15 +124,23 @@ function InputForm({ onGenerate, isGenerating }) {
                 disabled={isGenerating}
             />
 
-            <Input
-                label="活動日期"
-                type="date"
-                value={formData.date}
-                onChange={(e) => handleChange('date', e.target.value)}
-                error={errors.date}
-                required
-                disabled={isGenerating}
-            />
+            <div className="input-group">
+                <label className="input-group__label">
+                    活動日期
+                    <span className="input-group__required">*</span>
+                </label>
+                <input
+                    ref={dateInputRef}
+                    type="text"
+                    className={`input ${errors.date ? 'input--error' : ''} `}
+                    placeholder="請選擇日期"
+                    value={formData.date}
+                    onChange={(e) => handleChange('date', e.target.value)}
+                    disabled={isGenerating}
+                    autoComplete="off"
+                />
+                {errors.date && <span className="input-group__error">{errors.date}</span>}
+            </div>
 
             <TextArea
                 label="重點項目"

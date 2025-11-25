@@ -41,18 +41,20 @@
   &--success {
     background: $success;
     color: $text-primary;
+    transition: filter $transition-fast;
     
     &:hover:not(:disabled) {
-      background: darken($success, 10%);
+      filter: brightness(0.85);
     }
   }
   
   &--danger {
     background: $error;
     color: $text-primary;
+    transition: filter $transition-fast;
     
     &:hover:not(:disabled) {
-      background: darken($error, 10%);
+      filter: brightness(0.85);
     }
   }
   

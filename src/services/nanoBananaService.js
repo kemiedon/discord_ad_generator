@@ -1,0 +1,77 @@
+import { GoogleGenAI } from '@google/genai'
+
+/**
+ * 呼叫 Gemini (nano-banana pro) API 生成圖片
+ * @param {string} prompt - 圖片生成提示詞
+ * @param {string} [referenceImageUrl] - 參考圖片 URL (可選，暫不支援)
+ * @returns {Promise<string[]>} - 生成的圖片 base64 Data URL 陣列
+ */
+export const generateImages = async (prompt, referenceImageUrl) => {
+  console.log('開始生成圖片...')
+  console.log('Prompt:', prompt)
+  if (referenceImageUrl) {
+    console.log('⚠️  參考圖片功能暫不支援:', referenceImageUrl)
+  }
+
+  try {
+    const apiKey = import.meta.env.VITE_NANO_BANANA_API_KEY
+
+    if (!apiKey) {
+      throw new Error('缺少 VITE_NANO_BANANA_API_KEY 環境變數')
+    }
+
+    // 初始化 Google GenAI
+    const ai = new GoogleGenAI({
+      apiKey: apiKey
+    })
+
+    console.log('呼叫 Gemini 圖片生成 API...')
+    console.log('模型: gemini-3-pro-image-preview')
+
+    // 呼叫 API 生成 3 張圖片
+    const imageUrls = []
+    const numberOfImages = 3
+
+    for (let i = 0; i < numberOfImages; i++) {
+      console.log(`正在生成第 ${i + 1} 張圖片...`)
+
+      const response = await ai.models.generateContent({
+        model: 'gemini-3-pro-image-preview',
+        contents: prompt
+      })
+
+      // 解析回應
+      if (response.candidates && response.candidates.length > 0) {
+        const parts = response.candidates[0].content.parts
+
+        for (const part of parts) {
+          if (part.inlineData) {
+            // 將 base64 圖片數據轉換為 Data URL
+            const imageData = part.inlineData.data
+            const mimeType = part.inlineData.mimeType || 'image/png'
+            const dataUrl = `data:${mimeType};base64,${imageData}`
+            
+            imageUrls.push(dataUrl)
+            console.log(`✅ 第 ${i + 1} 張圖片生成成功`)
+            break
+          }
+        }
+      }
+    }
+
+    if (imageUrls.length === 0) {
+      throw new Error('API 沒有返回任何圖片')
+    }
+
+    console.log(`🎉 圖片生成完成，共 ${imageUrls.length} 張`)
+    return imageUrls
+
+  } catch (error) {
+    console.error('圖片生成失敗:', error.message)
+    if (error.response) {
+      console.error('API 錯誤詳情:', error.response.data)
+      console.error('HTTP 狀態碼:', error.response.status)
+    }
+    throw new Error(`圖片生成失敗: ${error.message}`)
+  }
+}

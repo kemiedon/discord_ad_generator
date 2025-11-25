@@ -3,6 +3,7 @@ node_modules
 dist
 dist-ssr
 *.local
+package-lock.json
 
 # 環境變數
 .env
@@ -28,3 +29,10 @@ firestore-debug.log
 # 測試
 coverage
 *.log
+test-*.mjs
+test-*.js
+
+# 生成的圖片（測試用）
+discord-ad-*.png
+gemini-*.png
+test-*.png

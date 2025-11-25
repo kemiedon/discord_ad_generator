@@ -123,10 +123,10 @@
     border-radius: $radius-sm;
     font-size: $font-size-sm;
     cursor: pointer;
-    transition: background $transition-fast;
+    transition: all $transition-fast;
     
     &:hover:not(:disabled) {
-      background: darken($error, 10%);
+        filter: brightness(0.8);
     }
     
     &:disabled {
