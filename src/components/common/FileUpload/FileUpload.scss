@@ -1,0 +1,137 @@
+@use '../../../styles/variables' as *;
+@use '../../../styles/mixins' as *;
+
+.file-upload-group {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xs;
+  margin-bottom: $spacing-md;
+  
+  &__label {
+    font-size: $font-size-sm;
+    font-weight: $font-weight-medium;
+    color: $text-secondary;
+  }
+  
+  &__required {
+    color: $error;
+    margin-left: $spacing-xs;
+  }
+  
+  &__error {
+    font-size: $font-size-xs;
+    color: $error;
+  }
+}
+
+.file-upload {
+  position: relative;
+  border: 2px dashed $text-muted;
+  border-radius: $radius-lg;
+  padding: $spacing-2xl;
+  text-align: center;
+  background: $bg-light;
+  transition: all $transition-base;
+  cursor: pointer;
+  
+  &:hover:not(&--disabled) {
+    border-color: $discord-purple;
+    background: $bg-dark;
+  }
+  
+  &--dragging {
+    border-color: $neon-blue;
+    background: rgba($neon-blue, 0.1);
+  }
+  
+  &--error {
+    border-color: $error;
+  }
+  
+  &--disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  
+  &__input {
+    position: absolute;
+    width: 0;
+    height: 0;
+    opacity: 0;
+  }
+  
+  &__label {
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: $spacing-sm;
+  }
+  
+  &__icon {
+    font-size: 3rem;
+  }
+  
+  &__text {
+    color: $text-primary;
+    font-weight: $font-weight-medium;
+  }
+  
+  &__hint {
+    color: $text-muted;
+    font-size: $font-size-sm;
+  }
+  
+  &__preview {
+    position: relative;
+    border-radius: $radius-lg;
+    overflow: hidden;
+    background: $bg-light;
+    
+    img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      display: block;
+    }
+    
+    &-overlay {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+      padding: $spacing-md;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+  }
+  
+  &__file-name {
+    color: $text-primary;
+    font-size: $font-size-sm;
+    @include text-ellipsis;
+    flex: 1;
+  }
+  
+  &__clear-btn {
+    background: $error;
+    color: $text-primary;
+    border: none;
+    padding: $spacing-xs $spacing-sm;
+    border-radius: $radius-sm;
+    font-size: $font-size-sm;
+    cursor: pointer;
+    transition: background $transition-fast;
+    
+    &:hover:not(:disabled) {
+      background: darken($error, 10%);
+    }
+    
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+}

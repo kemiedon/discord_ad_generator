@@ -1,0 +1,93 @@
+@use '../../../styles/variables' as *;
+@use '../../../styles/mixins' as *;
+
+.btn {
+  @include button-base;
+  font-size: $font-size-base;
+  gap: $spacing-sm;
+  
+  &:focus {
+    outline: 2px solid $discord-purple-light;
+    outline-offset: 2px;
+  }
+  
+  // 變體樣式
+  &--primary {
+    background: linear-gradient(135deg, $discord-purple 0%, $discord-purple-dark 100%);
+    color: $text-primary;
+    
+    &:hover:not(:disabled) {
+      background: linear-gradient(135deg, $discord-purple-light 0%, $discord-purple 100%);
+      transform: translateY(-2px);
+      box-shadow: $shadow-lg;
+    }
+    
+    &:active:not(:disabled) {
+      transform: translateY(0);
+    }
+  }
+  
+  &--secondary {
+    background: $bg-light;
+    color: $text-primary;
+    border: 1px solid $text-muted;
+    
+    &:hover:not(:disabled) {
+      background: $bg-dark;
+      border-color: $discord-purple-light;
+    }
+  }
+  
+  &--success {
+    background: $success;
+    color: $text-primary;
+    
+    &:hover:not(:disabled) {
+      background: darken($success, 10%);
+    }
+  }
+  
+  &--danger {
+    background: $error;
+    color: $text-primary;
+    
+    &:hover:not(:disabled) {
+      background: darken($error, 10%);
+    }
+  }
+  
+  // 大小樣式
+  &--small {
+    padding: $spacing-xs $spacing-md;
+    font-size: $font-size-sm;
+  }
+  
+  &--medium {
+    padding: $spacing-sm $spacing-lg;
+    font-size: $font-size-base;
+  }
+  
+  &--large {
+    padding: $spacing-md $spacing-xl;
+    font-size: $font-size-lg;
+  }
+  
+  // Loading 狀態
+  &--loading {
+    position: relative;
+    color: transparent;
+  }
+  
+  &__spinner {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top-color: $text-primary;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+  }
+}

@@ -1,0 +1,62 @@
+@use '../../../styles/variables' as *;
+@use '../../../styles/mixins' as *;
+
+.textarea-group {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xs;
+  margin-bottom: $spacing-md;
+  
+  &__label {
+    font-size: $font-size-sm;
+    font-weight: $font-weight-medium;
+    color: $text-secondary;
+  }
+  
+  &__required {
+    color: $error;
+    margin-left: $spacing-xs;
+  }
+  
+  &__error {
+    font-size: $font-size-xs;
+    color: $error;
+  }
+}
+
+.textarea {
+  width: 100%;
+  padding: $spacing-sm $spacing-md;
+  background: $bg-light;
+  border: 1px solid transparent;
+  border-radius: $radius-md;
+  color: $text-primary;
+  font-size: $font-size-base;
+  font-family: inherit;
+  resize: vertical;
+  transition: all $transition-base;
+  
+  &::placeholder {
+    color: $text-muted;
+  }
+  
+  &:focus {
+    outline: none;
+    border-color: $discord-purple;
+    background: $bg-dark;
+  }
+  
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    resize: none;
+  }
+  
+  &--error {
+    border-color: $error;
+    
+    &:focus {
+      border-color: $error;
+    }
+  }
+}
