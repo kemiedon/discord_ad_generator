@@ -1,0 +1,19 @@
+@use '../../styles/variables' as *;
+@use '../../styles/mixins' as *;
+
+.input-form {
+  @include card;
+  
+  &__title {
+    margin-bottom: $spacing-lg;
+    color: $text-primary;
+    font-size: $font-size-2xl;
+    border-bottom: 2px solid $discord-purple;
+    padding-bottom: $spacing-sm;
+  }
+  
+  // 在手機版調整間距
+  @include mobile {
+    padding: $spacing-md;
+  }
+}

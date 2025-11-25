@@ -16,15 +16,34 @@
   h1 {
     margin-bottom: $spacing-sm;
     color: $text-primary;
+    font-size: $font-size-3xl;
+    
+    @include mobile {
+      font-size: $font-size-2xl;
+    }
   }
   
   .subtitle {
     color: $text-secondary;
     font-size: $font-size-lg;
+    
+    @include mobile {
+      font-size: $font-size-base;
+      padding: 0 $spacing-md;
+    }
   }
 }
 
 .app-main {
   flex: 1;
-  padding: $spacing-2xl 0;
+  background: $bg-darker;
+}
+
+.app-footer {
+  background: $bg-dark;
+  padding: $spacing-lg 0;
+  text-align: center;
+  color: $text-muted;
+  font-size: $font-size-sm;
+  border-top: 1px solid $bg-light;
 }

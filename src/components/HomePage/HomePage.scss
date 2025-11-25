@@ -1,0 +1,42 @@
+@use '../../styles/variables' as *;
+@use '../../styles/mixins' as *;
+
+.home-page {
+  width: 100%;
+  
+  &__container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: $spacing-2xl $spacing-lg;
+    display: grid;
+    grid-template-columns: 400px 1fr;
+    gap: $spacing-2xl;
+    align-items: start;
+    
+    // 平板版：調整比例
+    @include tablet {
+      grid-template-columns: 1fr 1.5fr;
+    }
+    
+    // 手機版：改為上下佈局
+    @media (max-width: #{$breakpoint-tablet}) {
+      grid-template-columns: 1fr;
+      gap: $spacing-xl;
+      padding: $spacing-lg;
+    }
+  }
+  
+  &__form-section {
+    position: sticky;
+    top: $spacing-lg;
+    
+    // 手機版：取消 sticky
+    @media (max-width: #{$breakpoint-tablet}) {
+      position: static;
+    }
+  }
+  
+  &__preview-section {
+    min-height: 400px;
+  }
+}

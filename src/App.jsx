@@ -1,3 +1,4 @@
+import HomePage from './components/HomePage'
 import './App.scss'
 
 function App() {
@@ -9,10 +10,12 @@ function App() {
             </header>
 
             <main className="app-main">
-                <div className="container">
-                    <p>專案初始化中...</p>
-                </div>
+                <HomePage />
             </main>
+
+            <footer className="app-footer">
+                <p>© 2025 Skill Hub - Kemie, Ayn, 聖博老師の學習殿堂</p>
+            </footer>
         </div>
     )
 }

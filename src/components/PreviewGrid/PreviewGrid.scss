@@ -1,0 +1,117 @@
+@use '../../styles/variables' as *;
+@use '../../styles/mixins' as *;
+
+.preview-grid {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-lg;
+  
+  &--loading,
+  &--empty {
+    min-height: 400px;
+    @include flex-center;
+  }
+  
+  &__empty-state {
+    text-align: center;
+    color: $text-secondary;
+    
+    h3 {
+      margin-bottom: $spacing-sm;
+    }
+  }
+  
+  &__empty-icon {
+    font-size: 4rem;
+    margin-bottom: $spacing-md;
+  }
+  
+  &__header {
+    @include flex-between;
+    padding: $spacing-md $spacing-lg;
+  }
+  
+  &__title {
+    margin: 0;
+    color: $text-primary;
+    font-size: $font-size-xl;
+  }
+  
+  &__actions {
+    display: flex;
+    gap: $spacing-sm;
+  }
+  
+  &__images {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: $spacing-lg;
+    
+    @include mobile {
+      grid-template-columns: 1fr;
+    }
+  }
+  
+  &__image-card {
+    position: relative;
+    padding: 0;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all $transition-base;
+    
+    &--selected {
+      border: 3px solid $discord-purple;
+      box-shadow: 0 0 20px rgba($discord-purple, 0.5);
+    }
+    
+    &:hover {
+      transform: translateY(-4px);
+      box-shadow: $shadow-xl;
+    }
+  }
+  
+  &__image-wrapper {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1;
+  }
+  
+  &__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  
+  &__image-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0.7) 0%,
+      transparent 30%,
+      transparent 70%,
+      rgba(0, 0, 0, 0.7) 100%
+    );
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: $spacing-md;
+    opacity: 0;
+    transition: opacity $transition-base;
+    
+    .preview-grid__image-card:hover & {
+      opacity: 1;
+    }
+  }
+  
+  &__checkbox {
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+    align-self: flex-start;
+  }
+}
