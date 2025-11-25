@@ -1,0 +1,30 @@
+@use './styles/variables' as *;
+@use './styles/mixins' as *;
+
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-header {
+  background: linear-gradient(135deg, $discord-purple 0%, $discord-purple-dark 100%);
+  padding: $spacing-xl 0;
+  text-align: center;
+  box-shadow: $shadow-lg;
+  
+  h1 {
+    margin-bottom: $spacing-sm;
+    color: $text-primary;
+  }
+  
+  .subtitle {
+    color: $text-secondary;
+    font-size: $font-size-lg;
+  }
+}
+
+.app-main {
+  flex: 1;
+  padding: $spacing-2xl 0;
+}

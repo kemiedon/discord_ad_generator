@@ -1,0 +1,30 @@
+# 依賴
+node_modules
+dist
+dist-ssr
+*.local
+
+# 環境變數
+.env
+.env.local
+.env.production
+
+# 編輯器
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Firebase
+.firebase
+firebase-debug.log
+firestore-debug.log
+
+# 測試
+coverage
+*.log

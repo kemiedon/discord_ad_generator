@@ -1,0 +1,77 @@
+// ==================== 顏色定義 ====================
+// Discord 品牌色
+$discord-purple: #5865F2;
+$discord-purple-dark: #4752C4;
+$discord-purple-light: #7983F5;
+
+// 輔助色
+$neon-blue: #00D9FF;
+$neon-pink: #FF006E;
+
+// 中性色
+$bg-dark: #1E1F22;
+$bg-darker: #111214;
+$bg-light: #2B2D31;
+$text-primary: #F2F3F5;
+$text-secondary: #B5BAC1;
+$text-muted: #80848E;
+
+// 狀態色
+$success: #23A559;
+$error: #F23F43;
+$warning: #F0B232;
+
+// ==================== 字體定義 ====================
+$font-family-base: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans TC', 'Microsoft JhengHei', sans-serif;
+$font-family-heading: 'Noto Sans TC', -apple-system, BlinkMacSystemFont, sans-serif;
+
+$font-size-xs: 0.75rem;    // 12px
+$font-size-sm: 0.875rem;   // 14px
+$font-size-base: 1rem;     // 16px
+$font-size-lg: 1.125rem;   // 18px
+$font-size-xl: 1.25rem;    // 20px
+$font-size-2xl: 1.5rem;    // 24px
+$font-size-3xl: 2rem;      // 32px
+
+$font-weight-normal: 400;
+$font-weight-medium: 500;
+$font-weight-semibold: 600;
+$font-weight-bold: 700;
+
+// ==================== 間距定義 ====================
+$spacing-xs: 0.25rem;   // 4px
+$spacing-sm: 0.5rem;    // 8px
+$spacing-md: 1rem;      // 16px
+$spacing-lg: 1.5rem;    // 24px
+$spacing-xl: 2rem;      // 32px
+$spacing-2xl: 3rem;     // 48px
+$spacing-3xl: 4rem;     // 64px
+
+// ==================== 斷點定義 ====================
+$breakpoint-mobile: 480px;
+$breakpoint-tablet: 768px;
+$breakpoint-desktop: 1024px;
+$breakpoint-wide: 1280px;
+
+// ==================== 陰影定義 ====================
+$shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+$shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+$shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+$shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+
+// ==================== 圓角定義 ====================
+$radius-sm: 4px;
+$radius-md: 8px;
+$radius-lg: 12px;
+$radius-xl: 16px;
+$radius-full: 9999px;
+
+// ==================== 過渡效果 ====================
+$transition-fast: 150ms ease-in-out;
+$transition-base: 250ms ease-in-out;
+$transition-slow: 350ms ease-in-out;
+
+// ==================== Z-index 層級 ====================
+$z-index-dropdown: 1000;
+$z-index-modal: 1050;
+$z-index-toast: 1100;
