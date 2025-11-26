@@ -81,9 +81,10 @@ function InputForm({ onGenerate, isGenerating }) {
             newErrors.date = '請選擇活動日期'
         }
 
-        if (!formData.points.trim()) {
-            newErrors.points = '請輸入至少一個重點項目'
-        }
+        // 重點項目改為非必填
+        // if (!formData.points.trim()) {
+        //     newErrors.points = '請輸入至少一個重點項目'
+        // }
 
         if (!formData.style) {
             newErrors.style = '請選擇圖片風格'
@@ -143,12 +144,11 @@ function InputForm({ onGenerate, isGenerating }) {
             </div>
 
             <TextArea
-                label="重點項目"
+                label="重點項目（可選）"
                 placeholder="每行一個重點項目&#10;例如：&#10;學習 AI 基礎知識&#10;實作圖片生成&#10;分享經驗交流"
                 value={formData.points}
                 onChange={(e) => handleChange('points', e.target.value)}
                 error={errors.points}
-                required
                 rows={6}
                 disabled={isGenerating}
             />
