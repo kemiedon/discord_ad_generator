@@ -1,16 +1,16 @@
-import { GoogleGenAI } from '@google/genai'
+import axios from 'axios'
 
 /**
  * 呼叫 Gemini (nano-banana pro) API 生成圖片
  * @param {string} prompt - 圖片生成提示詞
- * @param {string} [referenceImageUrl] - 參考圖片 URL (可選，暫不支援)
+ * @param {string} [referenceImageUrl] - 參考圖片 URL (可選)
  * @returns {Promise<string[]>} - 生成的圖片 base64 Data URL 陣列
  */
 export const generateImages = async (prompt, referenceImageUrl) => {
   console.log('開始生成圖片...')
   console.log('Prompt:', prompt)
   if (referenceImageUrl) {
-    console.log('⚠️  參考圖片功能暫不支援:', referenceImageUrl)
+    console.log('✅ 使用參考圖片:', referenceImageUrl)
   }
 
   try {
@@ -19,11 +19,6 @@ export const generateImages = async (prompt, referenceImageUrl) => {
     if (!apiKey) {
       throw new Error('缺少 VITE_NANO_BANANA_API_KEY 環境變數')
     }
-
-    // 初始化 Google GenAI
-    const ai = new GoogleGenAI({
-      apiKey: apiKey
-    })
 
     console.log('呼叫 Gemini 圖片生成 API...')
     console.log('模型: gemini-3-pro-image-preview')
@@ -35,14 +30,56 @@ export const generateImages = async (prompt, referenceImageUrl) => {
     for (let i = 0; i < numberOfImages; i++) {
       console.log(`正在生成第 ${i + 1} 張圖片...`)
 
-      const response = await ai.models.generateContent({
-        model: 'gemini-3-pro-image-preview',
-        contents: prompt
+      // 構建請求內容
+      const contents = []
+      
+      // 如果有參考圖片，先加入參考圖片
+      if (referenceImageUrl) {
+        try {
+          // 將參考圖片轉換為 base64
+          const imageResponse = await axios.get(referenceImageUrl, {
+            responseType: 'arraybuffer'
+          })
+          const base64Image = Buffer.from(imageResponse.data, 'binary').toString('base64')
+          const mimeType = imageResponse.headers['content-type'] || 'image/jpeg'
+          
+          contents.push({
+            parts: [
+              {
+                inlineData: {
+                  mimeType: mimeType,
+                  data: base64Image
+                }
+              }
+            ]
+          })
+        } catch (error) {
+          console.warn('參考圖片載入失敗，將使用純文字生成:', error.message)
+        }
+      }
+      
+      // 加入文字提示詞
+      contents.push({
+        parts: [{ text: prompt }]
       })
 
+      // 呼叫 REST API
+      const response = await axios.post(
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-pro-image-preview:generateContent?key=${apiKey}`,
+        {
+          contents: contents
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          timeout: 60000 // 60 秒超時
+        }
+      )
+
       // 解析回應
-      if (response.candidates && response.candidates.length > 0) {
-        const parts = response.candidates[0].content.parts
+      if (response.data?.candidates && response.data.candidates.length > 0) {
+        const parts = response.data.candidates[0].content.parts
 
         for (const part of parts) {
           if (part.inlineData) {
