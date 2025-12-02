@@ -111,16 +111,19 @@ discord_ad_generator/
 ### 必要工具
 
 1. **Node.js** (v18 或更高)
+
    ```bash
    node --version  # 確認版本
    ```
 
 2. **npm** 或 **yarn**
+
    ```bash
    npm --version
    ```
 
 3. **Git**
+
    ```bash
    git --version
    ```
@@ -130,10 +133,12 @@ discord_ad_generator/
 ### 必要帳號
 
 1. **Google AI Studio**
+
    - 前往：https://aistudio.google.com/
    - 建立專案並取得 API Key
 
 2. **Firebase**
+
    - 前往：https://console.firebase.google.com/
    - 建立新專案
    - 啟用 Storage 和 Firestore
@@ -253,7 +258,7 @@ export default defineConfig({
 ### 2. HTML 入口 (index.html)
 
 ```html
-<!doctype html>
+<!DOCTYPE html>
 <html lang="zh-TW">
   <head>
     <meta charset="UTF-8" />
@@ -279,7 +284,7 @@ import './styles/global.scss'
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <App />
-  </React.StrictMode>,
+  </React.StrictMode>
 )
 ```
 
@@ -292,34 +297,34 @@ import './App.scss'
 
 function App() {
   return (
-    <div className="app">
-      <header className="app__header">
-        <h1 className="app__title">Discord 廣告生成器</h1>
-        <p className="app__subtitle">Skill Hub - 學習殿堂</p>
+    <div className='app'>
+      <header className='app__header'>
+        <h1 className='app__title'>Discord 廣告生成器</h1>
+        <p className='app__subtitle'>Skill Hub - 學習殿堂</p>
       </header>
-      <main className="app__main">
+      <main className='app__main'>
         <HomePage />
       </main>
       <Toaster
-        position="top-right"
+        position='top-right'
         toastOptions={{
           duration: 4000,
           style: {
             background: '#1e1e2e',
-            color: '#fff',
+            color: '#fff'
           },
           success: {
             iconTheme: {
               primary: '#10b981',
-              secondary: '#fff',
-            },
+              secondary: '#fff'
+            }
           },
           error: {
             iconTheme: {
               primary: '#ef4444',
-              secondary: '#fff',
-            },
-          },
+              secondary: '#fff'
+            }
+          }
         }}
       />
     </div>
@@ -381,10 +386,12 @@ discord-ad-*.png
 ### 關鍵點 1：HomePage 組件
 
 **功能**：
+
 - 管理圖片生成和發布流程
 - 整合 InputForm、PreviewGrid、PublishPreview
 
 **關鍵狀態**：
+
 ```javascript
 const [generatedImages, setGeneratedImages] = useState([])
 const [isGenerating, setIsGenerating] = useState(false)
@@ -396,6 +403,7 @@ const previewGridRef = useRef(null)
 ```
 
 **關鍵函數**：
+
 - `handleGenerate()` - 處理圖片生成
 - `handlePublish()` - 打開預覽 Modal
 - `handleConfirmPublish()` - 確認發布到 Discord
@@ -403,11 +411,13 @@ const previewGridRef = useRef(null)
 ### 關鍵點 2：InputForm 組件
 
 **功能**：
+
 - 收集使用者輸入（主題、日期、重點、風格、參考圖片）
 - 表單驗證
 - 整合 jQuery UI Datepicker
 
 **jQuery UI Datepicker 整合**：
+
 ```javascript
 import { useEffect, useRef } from 'react'
 import $ from 'jquery'
@@ -418,7 +428,7 @@ useEffect(() => {
   if (dateInputRef.current) {
     $(dateInputRef.current).datepicker({
       dateFormat: 'yy-mm-dd',
-      onSelect: (dateText) => {
+      onSelect: dateText => {
         handleChange('date', dateText)
       }
     })
@@ -433,6 +443,7 @@ useEffect(() => {
 ```
 
 **環境變數自動載入**：
+
 ```javascript
 const [formData, setFormData] = useState({
   topic: '',
@@ -447,11 +458,13 @@ const [formData, setFormData] = useState({
 ### 關鍵點 3：PreviewGrid 組件
 
 **功能**：
+
 - 顯示生成的圖片
 - 支援多選
 - 提供下載和發布按鈕
 
 **使用 forwardRef 暴露方法**：
+
 ```javascript
 import { forwardRef, useImperativeHandle } from 'react'
 
@@ -474,27 +487,29 @@ export default PreviewGrid
 ### 關鍵點 4：PublishPreview 組件
 
 **功能**：
+
 - 顯示要發布的圖片預覽
 - 允許編輯訊息內容
 - 確認後發布
 
 **關鍵邏輯**：
+
 ```javascript
 const [message, setMessage] = useState(() => {
   return buildInitialMessage(formData)
 })
 
-const buildInitialMessage = (formData) => {
+const buildInitialMessage = formData => {
   const { topic, date, points } = formData
   let message = `@everyone\n\n【活動通知】${topic}\n📅 ${date} 晚上9:00-10:00\n`
-  
+
   if (points && Array.isArray(points) && points.length > 0) {
     message += `\n✨ 本次重點項目：\n`
     points.forEach((point, index) => {
       message += `${index + 1}. ${point}\n`
     })
   }
-  
+
   message += `\n💬 歡迎大家一起來討論、交流經驗，一起進步！`
   return message
 }
@@ -503,12 +518,14 @@ const buildInitialMessage = (formData) => {
 ### 關鍵點 5：Modal 組件
 
 **功能**：
+
 - 通用彈窗組件
 - 支援不同尺寸
 - 點擊背景關閉
 - 鎖定 body 滾動
 
 **關鍵實作**：
+
 ```javascript
 useEffect(() => {
   if (isOpen) {
@@ -521,7 +538,7 @@ useEffect(() => {
   }
 }, [isOpen])
 
-const handleBackdropClick = (e) => {
+const handleBackdropClick = e => {
   if (e.target === e.currentTarget) {
     onClose()
   }
@@ -535,6 +552,7 @@ const handleBackdropClick = (e) => {
 ### 1. Gemini API 服務 (src/services/nanoBananaService.js)
 
 **核心功能**：
+
 - 使用 axios 直接調用 Gemini REST API
 - 支援 text-to-image 和 image-to-image
 - 瀏覽器原生 base64 轉換
@@ -544,7 +562,8 @@ const handleBackdropClick = (e) => {
 ```javascript
 import axios from 'axios'
 
-const API_ENDPOINT = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-3-pro-image-preview:generateContent'
+const API_ENDPOINT =
+  'https://generativelanguage.googleapis.com/v1beta/models/gemini-3-pro-image-preview:generateContent'
 
 export const generateImages = async (prompt, referenceImageUrl = null) => {
   const apiKey = import.meta.env.VITE_NANO_BANANA_API_KEY
@@ -564,9 +583,11 @@ export const generateImages = async (prompt, referenceImageUrl = null) => {
   }
 
   const requestBody = {
-    contents: [{
-      parts: parts
-    }],
+    contents: [
+      {
+        parts: parts
+      }
+    ],
     generationConfig: {
       temperature: 1,
       topK: 40,
@@ -578,19 +599,19 @@ export const generateImages = async (prompt, referenceImageUrl = null) => {
 
   // 發送請求（生成 4 張圖片）
   const numberOfImages = 4
-  const promises = Array(numberOfImages).fill(null).map(() =>
-    axios.post(`${API_ENDPOINT}?key=${apiKey}`, requestBody)
-  )
+  const promises = Array(numberOfImages)
+    .fill(null)
+    .map(() => axios.post(`${API_ENDPOINT}?key=${apiKey}`, requestBody))
 
   const responses = await Promise.all(promises)
   return responses.map(response => extractImageFromResponse(response.data))
 }
 
 // 瀏覽器原生 base64 轉換
-const loadImageAsBase64 = async (imageUrl) => {
+const loadImageAsBase64 = async imageUrl => {
   const response = await fetch(imageUrl)
   const blob = await response.blob()
-  
+
   return new Promise((resolve, reject) => {
     const reader = new FileReader()
     reader.onloadend = () => {
@@ -603,14 +624,16 @@ const loadImageAsBase64 = async (imageUrl) => {
 }
 
 // 從 Gemini 回應中提取圖片
-const extractImageFromResponse = (responseData) => {
+const extractImageFromResponse = responseData => {
   const text = responseData.candidates[0].content.parts[0].text
-  const base64Match = text.match(/data:image\/(png|jpeg|jpg);base64,([A-Za-z0-9+/=]+)/)
-  
+  const base64Match = text.match(
+    /data:image\/(png|jpeg|jpg);base64,([A-Za-z0-9+/=]+)/
+  )
+
   if (base64Match) {
     return `data:image/${base64Match[1]};base64,${base64Match[2]}`
   }
-  
+
   throw new Error('無法從回應中提取圖片')
 }
 ```
@@ -618,6 +641,7 @@ const extractImageFromResponse = (responseData) => {
 ### 2. Discord 服務 (src/services/discordService.js)
 
 **核心功能**：
+
 - 使用 Webhook 發布圖片和訊息
 - 格式化訊息內容
 - URL 驗證
@@ -628,7 +652,7 @@ const extractImageFromResponse = (responseData) => {
 import axios from 'axios'
 
 // base64 Data URL 轉 Blob
-const dataUrlToBlob = (dataUrl) => {
+const dataUrlToBlob = dataUrl => {
   const arr = dataUrl.split(',')
   const mime = arr[0].match(/:(.*?);/)[1]
   const bstr = atob(arr[1])
@@ -641,23 +665,28 @@ const dataUrlToBlob = (dataUrl) => {
 }
 
 // 構建 Discord 訊息
-const buildDiscordMessage = (formData) => {
+const buildDiscordMessage = formData => {
   const { topic, date, points } = formData
   let message = `@everyone\n\n【活動通知】${topic}\n📅 ${date} 晚上9:00-10:00\n`
-  
+
   if (points && Array.isArray(points) && points.length > 0) {
     message += `\n✨ 本次重點項目：\n`
     points.forEach((point, index) => {
       message += `${index + 1}. ${point}\n`
     })
   }
-  
+
   message += `\n💬 歡迎大家一起來討論、交流經驗，一起進步！`
   return message
 }
 
 // 發布到 Discord
-export const publishToDiscord = async (imageUrls, formData, webhookUrl, customMessage = null) => {
+export const publishToDiscord = async (
+  imageUrls,
+  formData,
+  webhookUrl,
+  customMessage = null
+) => {
   if (!webhookUrl) {
     throw new Error('請先設定 Discord Webhook URL')
   }
@@ -669,9 +698,9 @@ export const publishToDiscord = async (imageUrls, formData, webhookUrl, customMe
   try {
     const messageContent = customMessage || buildDiscordMessage(formData)
     const formDataToSend = new FormData()
-    
+
     formDataToSend.append('content', messageContent)
-    
+
     imageUrls.forEach((imageUrl, index) => {
       const blob = dataUrlToBlob(imageUrl)
       const fileName = `${formData.topic.replace(/\s+/g, '_')}_${index + 1}.png`
@@ -693,7 +722,7 @@ export const publishToDiscord = async (imageUrls, formData, webhookUrl, customMe
 }
 
 // 驗證 Webhook URL
-export const validateWebhookUrl = (url) => {
+export const validateWebhookUrl = url => {
   if (!url) return false
   const webhookPattern = /^https:\/\/discord\.com\/api\/webhooks\/\d+\/[\w-]+$/
   return webhookPattern.test(url)
@@ -703,6 +732,7 @@ export const validateWebhookUrl = (url) => {
 ### 3. Firebase Storage 服務 (src/services/firebaseStorage.js)
 
 **核心功能**：
+
 - 上傳參考圖片到 Firebase Storage
 - 取得圖片 URL
 
@@ -756,6 +786,7 @@ export const db = getFirestore(app)
 ### 5. Prompt 構建工具 (src/utils/promptBuilder.js)
 
 **核心功能**：
+
 - 根據表單資料構建 AI Prompt
 - 確保文字可讀性
 
@@ -763,16 +794,16 @@ export const db = getFirestore(app)
 
 ```javascript
 const STYLE_MAP = {
-  'cyberpunk': 'cyberpunk',
+  cyberpunk: 'cyberpunk',
   '90s-anime': '90s anime style',
   'hand-drawn-japanese': 'hand-drawn Japanese illustration',
-  'watercolor': 'watercolor painting',
-  'photorealistic': 'photorealistic',
+  watercolor: 'watercolor painting',
+  photorealistic: 'photorealistic',
   'retro-poster': 'retro poster design',
-  'neon': 'neon style'
+  neon: 'neon style'
 }
 
-export const buildPrompt = (formData) => {
+export const buildPrompt = formData => {
   const { topic, date, points, style } = formData
   const selectedStyle = STYLE_MAP[style] || 'modern design'
 
@@ -811,13 +842,13 @@ Image Specifications:
 
 ## 樣式實作
 
-### 1. 全域變數 (src/styles/_variables.scss)
+### 1. 全域變數 (src/styles/\_variables.scss)
 
 ```scss
 // 顏色系統
-$primary-color: #5865F2;
-$secondary-color: #00D9FF;
-$accent-color: #FF006E;
+$primary-color: #5865f2;
+$secondary-color: #00d9ff;
+$accent-color: #ff006e;
 $success-color: #10b981;
 $error-color: #ef4444;
 $warning-color: #f59e0b;
@@ -864,7 +895,7 @@ $breakpoint-lg: 1024px;
 $breakpoint-xl: 1280px;
 ```
 
-### 2. Mixins (src/styles/_mixins.scss)
+### 2. Mixins (src/styles/\_mixins.scss)
 
 ```scss
 // 響應式斷點
@@ -941,9 +972,9 @@ $breakpoint-xl: 1280px;
 html,
 body {
   height: 100%;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto',
+    'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans',
+    'Helvetica Neue', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -1040,6 +1071,7 @@ npm run dev
 ```
 
 應該會看到：
+
 ```
   VITE v6.0.5  ready in XXX ms
 
@@ -1074,21 +1106,25 @@ npm run dev
 ### 常見問題排除
 
 **問題 1：圖片生成失敗（403 錯誤）**
+
 - 檢查 Gemini API Key 是否有效
 - 確認 API Key 有圖片生成權限
 - 檢查 API 配額是否用盡
 
 **問題 2：Discord 發布失敗（404 錯誤）**
+
 - 檢查 Webhook URL 格式是否正確
 - 確認 Webhook 沒有被刪除
 - 重新建立 Webhook 並更新 URL
 
 **問題 3：參考圖片上傳失敗**
+
 - 檢查 Firebase Storage 規則
 - 確認 Firebase 專案已啟用 Storage
 - 檢查圖片大小（建議 < 5 MB）
 
 **問題 4：Datepicker 不顯示**
+
 - 確認 jQuery 和 jQuery UI 已安裝
 - 檢查 CSS 是否正確引入
 - 查看瀏覽器 Console 是否有錯誤
@@ -1174,6 +1210,7 @@ git commit -m "test: 新增圖片生成測試"
 - **修訂號（Patch）**：向下相容的問題修正
 
 範例：
+
 - `1.0.0` - 初始版本
 - `1.1.0` - 新增功能（例如：發布預覽）
 - `1.1.1` - Bug 修復
@@ -1192,6 +1229,7 @@ git commit -m "test: 新增圖片生成測試"
 6. **環境變數**：正確設定所有環境變數
 
 如有任何問題，請參考：
+
 - `SPEC/MAIN.md` - 完整規格書
 - `TESTING_DISCORD.md` - Discord 測試指南
 - 原始碼注釋 - 每個文件都有詳細說明
