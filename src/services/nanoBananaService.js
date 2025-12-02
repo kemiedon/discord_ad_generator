@@ -36,11 +36,18 @@ export const generateImages = async (prompt, referenceImageUrl) => {
       // 如果有參考圖片，先加入參考圖片
       if (referenceImageUrl) {
         try {
-          // 將參考圖片轉換為 base64
+          // 將參考圖片轉換為 base64（瀏覽器相容方式）
           const imageResponse = await axios.get(referenceImageUrl, {
             responseType: 'arraybuffer'
           })
-          const base64Image = Buffer.from(imageResponse.data, 'binary').toString('base64')
+          
+          // 使用瀏覽器原生方法轉換為 base64
+          const uint8Array = new Uint8Array(imageResponse.data)
+          let binaryString = ''
+          for (let i = 0; i < uint8Array.length; i++) {
+            binaryString += String.fromCharCode(uint8Array[i])
+          }
+          const base64Image = btoa(binaryString)
           const mimeType = imageResponse.headers['content-type'] || 'image/jpeg'
           
           contents.push({
