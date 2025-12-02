@@ -12,9 +12,9 @@ function HomePage() {
     const [generatedImages, setGeneratedImages] = useState([])
     const [isGenerating, setIsGenerating] = useState(false)
     const [isPublishing, setIsPublishing] = useState(false)
-    const [currentFormData, setCurrentFormData] = useState(null) // 儲存當前表單資料
+    const [currentFormData, setCurrentFormData] = useState(null); // 儲存當前表單資料
 
-    const handleGenerate = async (formData) {
+    const handleGenerate = async (formData) => {
         console.log('開始生成流程，表單資料：', formData)
         setIsGenerating(true)
         setGeneratedImages([]) // 清空之前的圖片
