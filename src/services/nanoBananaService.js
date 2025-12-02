@@ -30,12 +30,13 @@ export const generateImages = async (prompt, referenceImageUrl) => {
     for (let i = 0; i < numberOfImages; i++) {
       console.log(`正在生成第 ${i + 1} 張圖片...`)
 
-      // 構建請求內容
-      const contents = []
+      // 構建請求內容 - 正確的格式
+      const parts = []
       
       // 如果有參考圖片，先加入參考圖片
       if (referenceImageUrl) {
         try {
+          console.log('正在載入參考圖片...')
           // 將參考圖片轉換為 base64（瀏覽器相容方式）
           const imageResponse = await axios.get(referenceImageUrl, {
             responseType: 'arraybuffer'
@@ -44,38 +45,40 @@ export const generateImages = async (prompt, referenceImageUrl) => {
           // 使用瀏覽器原生方法轉換為 base64
           const uint8Array = new Uint8Array(imageResponse.data)
           let binaryString = ''
-          for (let i = 0; i < uint8Array.length; i++) {
-            binaryString += String.fromCharCode(uint8Array[i])
+          for (let j = 0; j < uint8Array.length; j++) {
+            binaryString += String.fromCharCode(uint8Array[j])
           }
           const base64Image = btoa(binaryString)
           const mimeType = imageResponse.headers['content-type'] || 'image/jpeg'
           
-          contents.push({
-            parts: [
-              {
-                inlineData: {
-                  mimeType: mimeType,
-                  data: base64Image
-                }
-              }
-            ]
+          parts.push({
+            inlineData: {
+              mimeType: mimeType,
+              data: base64Image
+            }
           })
+          console.log('✅ 參考圖片載入成功')
         } catch (error) {
-          console.warn('參考圖片載入失敗，將使用純文字生成:', error.message)
+          console.warn('⚠️ 參考圖片載入失敗，將使用純文字生成:', error.message)
         }
       }
       
       // 加入文字提示詞
-      contents.push({
-        parts: [{ text: prompt }]
-      })
+      parts.push({ text: prompt })
+
+      // 構建請求體
+      const requestBody = {
+        contents: [{
+          parts: parts
+        }]
+      }
+
+      console.log('發送 API 請求...')
 
       // 呼叫 REST API
       const response = await axios.post(
         `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-pro-image-preview:generateContent?key=${apiKey}`,
-        {
-          contents: contents
-        },
+        requestBody,
         {
           headers: {
             'Content-Type': 'application/json'
