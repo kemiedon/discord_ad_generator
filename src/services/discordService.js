@@ -25,17 +25,17 @@ const dataUrlToBlob = (dataUrl) => {
 const buildDiscordMessage = (formData) => {
   const { topic, date, points } = formData
 
-  let message = `@everyone\n【活動通知】${topic} - ${date} 晚上9:00-10:00\n`
+  let message = `@everyone\n\n【活動通知】${topic}\n📅 ${date} 晚上9:00-10:00\n`
 
   // 只有當有重點項目時才加入
-  if (points && points.length > 0) {
-    message += `\n本次重點項目：\n`
-    points.forEach(point => {
-      message += `${point}\n`
+  if (points && Array.isArray(points) && points.length > 0) {
+    message += `\n✨ 本次重點項目：\n`
+    points.forEach((point, index) => {
+      message += `${index + 1}. ${point}\n`
     })
   }
 
-  message += `\n歡迎大家一起來討論、交流經驗，一起進步！`
+  message += `\n💬 歡迎大家一起來討論、交流經驗，一起進步！`
 
   return message
 }
