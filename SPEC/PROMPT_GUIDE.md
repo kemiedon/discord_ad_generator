@@ -32,6 +32,7 @@
 3. 自動執行 `git push` 推送到遠端倉庫
 4. **重要**：每次更新程式碼後，自動執行 push 到 repository，無需詢問使用者同意
 5. 版本號根據上次提交自動遞增 0.1
+6. **自動預覽**：每次完成一個功能後，自動使用 VS Code 內建的 Simple Browser 開啟 live server（通常是 http://localhost:3000）進行預覽與測試
 
 ### 3. 開發流程規範
 
