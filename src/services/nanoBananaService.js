@@ -23,9 +23,9 @@ export const generateImages = async (prompt, referenceImageUrl) => {
     console.log('呼叫 Gemini 圖片生成 API...')
     console.log('模型: gemini-3-pro-image-preview')
 
-    // 呼叫 API 生成 3 張圖片
+    // 呼叫 API 生成 4 張圖片
     const imageUrls = []
-    const numberOfImages = 3
+    const numberOfImages = 4
 
     for (let i = 0; i < numberOfImages; i++) {
       console.log(`正在生成第 ${i + 1} 張圖片...`)
