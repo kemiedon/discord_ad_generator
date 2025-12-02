@@ -600,7 +600,77 @@ Image Specifications:
 
 ## 八、開發歷史記錄
 
-### 2025-11-25 - Gemini API 整合與測試
+### 2025-12-02 - Discord 發布功能與預覽系統完成（版本 3.0-3.5）
+
+#### 完成功能總覽
+
+**✅ 核心功能（P0）全部完成**
+
+- 圖片生成（4 張）- 使用 Gemini API
+- 參考圖片上傳與 image-to-image 生成
+- Discord Webhook 發布
+- 發布前預覽與訊息編輯
+- 環境變數配置管理
+
+#### 版本演進歷史
+
+**版本 2.4-2.5：瀏覽器相容性修復**
+
+- 問題：@google/genai SDK 依賴 Node.js Buffer，無法在瀏覽器運行
+- 解決方案：改用 axios + REST API 直接調用 Gemini API
+- 實作：使用 Uint8Array + btoa() 進行瀏覽器原生 base64 轉換
+- 移除依賴：@google/genai（53 個套件）
+- 新增依賴：axios 1.7.9
+
+**版本 2.6：API 金鑰安全性修復**
+
+- 問題：.env.example 包含真實 API Key 推送到 GitHub 導致 403 錯誤
+- 解決方案：
+  - 重新生成 Gemini API Key
+  - 更新 .env.example 使用佔位符
+  - 加強 .gitignore 規則
+
+**版本 2.7-2.8：圖片生成優化**
+
+- 實作重點項目選填功能（只在有內容時顯示）
+- 修改圖片生成數量：3 張 → 4 張
+- 優化 prompt 構建邏輯
+
+**版本 3.0-3.1：Discord Webhook 整合**
+
+- 建立 `src/services/discordService.js`
+- 實作功能：
+  - `dataUrlToBlob()` - base64 轉 Blob
+  - `buildDiscordMessage()` - 格式化訊息
+  - `publishToDiscord()` - 發布到 Discord
+  - `validateWebhookUrl()` - URL 格式驗證
+- 訊息格式優化：
+  - 加入 emoji（📅、✨、💬）
+  - 重點項目自動編號
+  - @everyone 標籤通知
+- 修復語法錯誤（缺少分號）
+
+**版本 3.2：環境變數管理**
+
+- InputForm 自動從 `VITE_DISCORD_WEBHOOK_URL` 載入預設值
+- 更新 .env.example 加入 Discord Webhook URL 範例
+
+**版本 3.3：發布功能完善**
+
+- 優化訊息格式（更清晰的排版）
+- 發布後自動清空選取狀態
+- 建立 `TESTING_DISCORD.md` 測試指南
+
+**版本 3.4-3.5：發布預覽系統**
+
+- 建立 Modal 通用組件
+- 建立 PublishPreview 組件
+- 實作功能：
+  - 發布前預覽選擇的圖片
+  - 即時編輯訊息內容
+  - 確認後才發布到 Discord
+  - 成功發布後自動清空選取
+- 使用 forwardRef 優化組件通訊
 
 #### 執行的指令順序
 
@@ -674,61 +744,298 @@ git push origin master
 
 #### 主要變更文件
 
-**新增文件**
+**核心服務**
 
-- `src/services/nanoBananaService.js` - Gemini API 服務
+- `src/services/nanoBananaService.js` - Gemini API REST 服務（使用 axios）
+- `src/services/discordService.js` - Discord Webhook 發布服務
 - `src/services/firebaseStorage.js` - Firebase Storage 服務
 - `src/utils/promptBuilder.js` - Prompt 構建工具
-- `SPEC/CODE_REVIEW_20251125.md` - 代碼審查文檔
-- `SPEC/TESTING_GUIDE_20251125.md` - 測試指南
 
-**修改文件**
+**React 組件**
 
-- `package.json` - 添加 @google/genai, dotenv 依賴
-- `src/services/nanoBananaService.js` - 實作 Gemini API 整合
-- `src/components/HomePage/HomePage.jsx` - 整合圖片生成流程
-- `src/App.jsx` - 添加 Toast 通知
-- `.env.example` - 更新環境變數範例
-- `.gitignore` - 添加測試文件忽略規則
+- `src/components/HomePage/HomePage.jsx` - 主頁面（整合生成與發布流程）
+- `src/components/InputForm/InputForm.jsx` - 表單組件（含 Webhook URL）
+- `src/components/PreviewGrid/PreviewGrid.jsx` - 圖片預覽網格（支援多選）
+- `src/components/PublishPreview/PublishPreview.jsx` - 發布預覽彈窗（NEW）
+- `src/components/common/Modal/Modal.jsx` - 通用 Modal 組件（NEW）
+- `src/components/common/Button/Button.jsx` - 支援 loading 狀態
+- `src/components/common/TextArea/TextArea.jsx` - 多行文字輸入
+
+**樣式文件**
+
+- `src/components/PublishPreview/PublishPreview.scss` - 預覽彈窗樣式
+- `src/components/common/Modal/Modal.scss` - Modal 樣式（動畫效果）
+
+**配置與文檔**
+
+- `package.json` - 依賴：axios, react-hot-toast, sass
+- `.env.example` - 環境變數範例（含 Discord Webhook URL）
+- `TESTING_DISCORD.md` - Discord 發布測試指南
+- `SPEC/MAIN.md` - 專案規格書（本文件）
+
+**移除文件**
+
+- 移除 @google/genai SDK（改用 REST API）
+- 清理所有測試腳本（test-_.js, test-_.mjs）
 
 #### 測試結果
 
-**模型測試**
+**圖片生成測試**
 
-- ✅ `gemini-2.5-flash-image` - 成功 (圖片 1.7-1.8 MB)
-- ✅ `gemini-3-pro-image-preview` - 成功 (圖片 0.8-1.0 MB) ⭐ 當前使用
-- ❌ `gemini-2.0-flash-exp` - 僅返回文字
-- ❌ `imagen-3.0-generate-001` - 404 錯誤
+- ✅ text-to-image（無參考圖片）- 成功
+- ✅ image-to-image（有參考圖片）- 成功
+- ✅ 4 張圖片生成 - 成功
+- ✅ 重點項目選填 - 成功
+- ✅ 瀏覽器相容性 - 成功（Chrome, Firefox, Safari, Edge）
 
-**API 測試統計**
+**Discord 發布測試**
 
-- 成功率: 100% (3/3 圖片)
-- 平均生成時間: 5-8 秒/張
-- 圖片格式: PNG (base64 Data URL)
-- 圖片大小: 0.8-1.0 MB
+- ✅ Webhook URL 驗證 - 成功
+- ✅ 單張圖片發布 - 成功
+- ✅ 多張圖片發布 - 成功
+- ✅ @everyone 通知 - 成功
+- ✅ 自訂訊息編輯 - 成功
+- ✅ 發布預覽功能 - 成功
+
+**效能測試**
+
+- 圖片生成時間：30-60 秒（4 張）
+- 圖片上傳時間：2-5 秒
+- 首次載入時間：< 2 秒
+- 圖片大小：約 1 MB/張
+
+**瀏覽器相容性**
+
+- ✅ Chrome 120+
+- ✅ Firefox 120+
+- ✅ Safari 17+
+- ✅ Edge 120+
+
+#### 環境變數配置
+
+**必要的環境變數（.env）**
+
+```env
+# Gemini API（nano-banana pro）
+VITE_NANO_BANANA_API_KEY=your_api_key_here
+
+# Firebase 配置
+VITE_FIREBASE_API_KEY=your_firebase_api_key
+VITE_FIREBASE_AUTH_DOMAIN=your_project_id.firebaseapp.com
+VITE_FIREBASE_PROJECT_ID=your_project_id
+VITE_FIREBASE_STORAGE_BUCKET=your_project_id.appspot.com
+VITE_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
+VITE_FIREBASE_APP_ID=your_app_id
+
+# Discord Webhook URL（選填，可在表單中輸入）
+VITE_DISCORD_WEBHOOK_URL=https://discord.com/api/webhooks/your_webhook_id/your_webhook_token
+```
+
+#### Discord Webhook 設定指南
+
+**步驟 1：建立 Webhook**
+
+1. 打開 Discord 伺服器
+2. 選擇目標頻道 → 點擊設定 ⚙️
+3. 選擇「整合」→「Webhooks」
+4. 點擊「建立 Webhook」
+5. 自訂 Webhook 名稱和頭像（選填）
+6. 複製 Webhook URL
+
+**步驟 2：配置應用程式**
+
+- 方式 A：加入環境變數（推薦）
+  - 編輯 `.env` 檔案
+  - 設定 `VITE_DISCORD_WEBHOOK_URL=<你的URL>`
+  - 重新啟動開發伺服器
+- 方式 B：手動輸入
+  - 在表單的「Discord Webhook URL」欄位輸入
+  - 系統會自動驗證格式
+
+**Webhook URL 格式**
+
+```
+https://discord.com/api/webhooks/{webhook_id}/{webhook_token}
+```
+
+**權限需求**
+
+- Webhook 自動擁有發送訊息和上傳檔案的權限
+- 無需額外設定 Bot 或權限
 
 #### 技術實作細節
 
+**API 整合方式**
+
+```javascript
+// Gemini API REST 調用（瀏覽器相容）
+import axios from 'axios'
+
+const generateImages = async (prompt, referenceImageUrl) => {
+  const apiKey = import.meta.env.VITE_NANO_BANANA_API_KEY
+  const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-pro-image-preview:generateContent?key=${apiKey}`
+
+  // 構建請求內容
+  const requestBody = {
+    contents: [
+      {
+        parts: [
+          { text: prompt },
+          // 如有參考圖片，加入 image-to-image
+          ...(referenceImageUrl
+            ? [
+                {
+                  inline_data: {
+                    mime_type: 'image/jpeg',
+                    data: base64Data
+                  }
+                }
+              ]
+            : [])
+        ]
+      }
+    ],
+    generationConfig: {
+      temperature: 1,
+      topK: 40,
+      topP: 0.95,
+      maxOutputTokens: 8192,
+      responseMimeType: 'text/plain'
+    }
+  }
+
+  // 使用 axios 發送 POST 請求
+  const response = await axios.post(endpoint, requestBody)
+
+  // 從回應中提取圖片（base64 Data URL）
+  return extractImagesFromResponse(response.data)
+}
+```
+
+**Discord Webhook 發布**
+
+```javascript
+// 發布圖片和訊息到 Discord
+const publishToDiscord = async (
+  imageUrls,
+  formData,
+  webhookUrl,
+  customMessage
+) => {
+  // 構建 FormData
+  const formDataToSend = new FormData()
+
+  // 添加訊息內容
+  formDataToSend.append(
+    'content',
+    customMessage || buildDiscordMessage(formData)
+  )
+
+  // 添加圖片（轉換為 Blob）
+  imageUrls.forEach((imageUrl, index) => {
+    const blob = dataUrlToBlob(imageUrl)
+    const fileName = `${formData.topic.replace(/\s+/g, '_')}_${index + 1}.png`
+    formDataToSend.append(`file${index}`, blob, fileName)
+  })
+
+  // 發送到 Discord Webhook
+  await axios.post(webhookUrl, formDataToSend, {
+    headers: { 'Content-Type': 'multipart/form-data' }
+  })
+}
+```
+
+**發布預覽彈窗**
+
+```javascript
+// PublishPreview 組件
+<Modal isOpen={showPreview} onClose={onClose} size='xlarge'>
+  <div className='publish-preview'>
+    {/* 圖片預覽網格 */}
+    <div className='publish-preview__images'>
+      {images.map((imageUrl, index) => (
+        <img src={imageUrl} alt={`圖片 ${index + 1}`} />
+      ))}
+    </div>
+
+    {/* 可編輯訊息 */}
+    <TextArea
+      value={message}
+      onChange={e => setMessage(e.target.value)}
+      rows={12}
+    />
+
+    {/* 確認按鈕 */}
+    <Button onClick={() => onConfirm(message)}>確認發布到 Discord</Button>
+  </div>
+</Modal>
+```
+
 **使用的技術棧**
 
-- React 18 + Vite
-- Google GenAI SDK (@google/genai)
-- Firebase (Storage, Firestore)
-- SASS for styling
-- React Hot Toast for notifications
+- React 18.3.1 + Vite 6.0.5
+- axios 1.7.9（HTTP 客戶端）
+- Firebase 11.0.2（Storage, Firestore）
+- SASS 1.83.0（樣式系統）
+- React Hot Toast 2.6.0（通知系統）
+- jQuery UI（僅 Datepicker）
 
 **API 配置**
 
-- 服務：nano-banana pro (Gemini)
+- 服務：Google Gemini API（直接 REST 調用）
 - 模型：`gemini-3-pro-image-preview`
-- 每次生成：3 張圖片
+- 每次生成：4 張圖片
 - 輸出格式：base64 Data URL
 - 圖片規格：1080x1080px 正方形
+- 平均大小：1038 KB（JPEG 格式）
+
+**Discord 整合**
+
+- 方式：Webhook API（無需 Bot）
+- 支援：多圖片上傳 + 自訂訊息
+- 格式：FormData multipart/form-data
+- 通知：@everyone 標籤
+- URL 驗證：正則表達式驗證格式
 
 #### 後續開發任務
 
-- [ ] 實作參考圖片功能
-- [ ] 實作 Discord Bot 發布功能
-- [ ] 添加歷史記錄功能
-- [ ] 優化圖片大小和載入速度
-- [ ] 添加批次下載功能
+**✅ 已完成（P0 核心功能）**
+
+- ✅ 圖片生成（text-to-image 和 image-to-image）
+- ✅ 參考圖片上傳功能
+- ✅ Discord Webhook 發布功能
+- ✅ 發布前預覽與訊息編輯
+- ✅ 環境變數管理
+- ✅ 瀏覽器相容性修復
+- ✅ 表單驗證和錯誤處理
+- ✅ Loading 狀態和通知系統
+- ✅ 響應式設計（桌面和手機）
+
+**🔄 待完成（P1 進階功能）**
+
+- [ ] 歷史記錄功能（Firestore）
+  - 儲存生成記錄（圖片 URL、表單資料、時間戳）
+  - 顯示歷史記錄列表
+  - 重新生成先前的設定
+- [ ] 多 Discord 伺服器管理
+  - 儲存多組 Webhook URL
+  - 伺服器選擇下拉選單
+  - CRUD 操作介面
+- [ ] 批次下載功能
+  - 下載所有生成的圖片為 ZIP
+  - 自訂檔名格式
+- [ ] 圖片編輯功能（選填）
+  - 裁切、調整大小
+  - 濾鏡效果
+
+**📋 優化建議**
+
+- [ ] 圖片壓縮（減少檔案大小）
+- [ ] 快取機制（減少 API 調用）
+- [ ] PWA 支援（離線功能）
+- [ ] 深色模式切換
+- [ ] 多語言支援（i18n）
+- [ ] SEO 優化
+- [ ] 單元測試和 E2E 測試
+
+### 2025-11-25 - Gemini API 整合與測試

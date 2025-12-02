@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import InputForm from '../InputForm'
 import PreviewGrid from '../PreviewGrid'
 import PublishPreview from '../PublishPreview'
@@ -16,6 +16,7 @@ function HomePage() {
     const [currentFormData, setCurrentFormData] = useState(null) // 儲存當前表單資料
     const [showPreview, setShowPreview] = useState(false)
     const [previewImages, setPreviewImages] = useState([])
+    const previewGridRef = useRef(null)
 
     const handleGenerate = async (formData) => {
         console.log('開始生成流程，表單資料：', formData)
@@ -96,6 +97,10 @@ function HomePage() {
             )
             toast.success(`成功發布 ${result.imageCount} 張圖片到 Discord！`, { id: toastId })
             setShowPreview(false)
+            // 清空選取狀態
+            if (previewGridRef.current) {
+                previewGridRef.current.clearSelection()
+            }
         } catch (error) {
             console.error('發布失敗：', error)
             toast.error(`發布失敗: ${error.message}`, { id: toastId })
@@ -116,6 +121,7 @@ function HomePage() {
 
                 <div className="home-page__preview-section">
                     <PreviewGrid
+                        ref={previewGridRef}
                         images={generatedImages}
                         isGenerating={isGenerating}
                         onPublish={handlePublish}

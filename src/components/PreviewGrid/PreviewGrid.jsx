@@ -1,11 +1,18 @@
-import { useState } from 'react'
+import { useState, useImperativeHandle, forwardRef } from 'react'
 import Card from '../common/Card'
 import Button from '../common/Button'
 import Loading from '../common/Loading'
 import './PreviewGrid.scss'
 
-function PreviewGrid({ images, isGenerating, onPublish, isPublishing }) {
+const PreviewGrid = forwardRef(({ images, isGenerating, onPublish, isPublishing }, ref) => {
     const [selectedImages, setSelectedImages] = useState([])
+
+    // 對外暴露 clearSelection 方法
+    useImperativeHandle(ref, () => ({
+        clearSelection: () => {
+            setSelectedImages([])
+        }
+    }))
 
     const handleImageSelect = (index) => {
         setSelectedImages(prev => {
@@ -115,6 +122,8 @@ function PreviewGrid({ images, isGenerating, onPublish, isPublishing }) {
             </div>
         </div>
     )
-}
+})
+
+PreviewGrid.displayName = 'PreviewGrid'
 
 export default PreviewGrid
