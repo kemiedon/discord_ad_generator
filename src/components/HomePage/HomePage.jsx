@@ -5,17 +5,20 @@ import './HomePage.scss'
 import { uploadFile } from '../../services/firebaseStorage'
 import { buildPrompt } from '../../utils/promptBuilder'
 import { generateImages } from '../../services/nanoBananaService'
+import { publishToDiscord, validateWebhookUrl } from '../../services/discordService'
 import toast from 'react-hot-toast'
 
 function HomePage() {
     const [generatedImages, setGeneratedImages] = useState([])
     const [isGenerating, setIsGenerating] = useState(false)
     const [isPublishing, setIsPublishing] = useState(false)
+    const [currentFormData, setCurrentFormData] = useState(null) // 儲存當前表單資料
 
-    const handleGenerate = async (formData) => {
+    const handleGenerate = async (formData) {
         console.log('開始生成流程，表單資料：', formData)
         setIsGenerating(true)
         setGeneratedImages([]) // 清空之前的圖片
+        setCurrentFormData(formData) // 儲存表單資料
 
         const toastId = toast.loading('正在生成圖片，請稍候...')
 
@@ -52,15 +55,31 @@ function HomePage() {
 
     const handlePublish = async (selectedImages) => {
         console.log('發布圖片到 Discord：', selectedImages)
-        setIsPublishing(true)
+        
+        if (!currentFormData) {
+            toast.error('找不到表單資料，請重新生成圖片')
+            return
+        }
 
+        const webhookUrl = currentFormData.webhookUrl
+
+        // 驗證 Webhook URL
+        if (!webhookUrl) {
+            toast.error('請先在表單中輸入 Discord Webhook URL')
+            return
+        }
+
+        if (!validateWebhookUrl(webhookUrl)) {
+            toast.error('Discord Webhook URL 格式不正確，請檢查')
+            return
+        }
+
+        setIsPublishing(true)
         const toastId = toast.loading('正在發布到 Discord...')
 
         try {
-            // TODO: 實作 Discord 發布邏輯
-            await new Promise(resolve => setTimeout(resolve, 1500))
-
-            toast.success(`成功發布 ${selectedImages.length} 張圖片到 Discord！`, { id: toastId })
+            const result = await publishToDiscord(selectedImages, currentFormData, webhookUrl)
+            toast.success(`成功發布 ${result.imageCount} 張圖片到 Discord！`, { id: toastId })
         } catch (error) {
             console.error('發布失敗：', error)
             toast.error(`發布失敗: ${error.message}`, { id: toastId })

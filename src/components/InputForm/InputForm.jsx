@@ -23,7 +23,8 @@ function InputForm({ onGenerate, isGenerating }) {
         date: '',
         points: '',
         style: '',
-        referenceImage: null
+        referenceImage: null,
+        webhookUrl: ''
     })
 
     const [errors, setErrors] = useState({})
@@ -168,6 +169,16 @@ function InputForm({ onGenerate, isGenerating }) {
                 onFileSelect={(file) => handleChange('referenceImage', file)}
                 error={errors.referenceImage}
                 disabled={isGenerating}
+            />
+
+            <Input
+                label="Discord Webhook URL（可選）"
+                placeholder="https://discord.com/api/webhooks/..."
+                value={formData.webhookUrl}
+                onChange={(e) => handleChange('webhookUrl', e.target.value)}
+                error={errors.webhookUrl}
+                disabled={isGenerating}
+                type="url"
             />
 
             <Button
