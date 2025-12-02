@@ -28,8 +28,6 @@ function PreviewGrid({ images, isGenerating, onPublish, isPublishing }) {
     const handlePublish = () => {
         const selectedImageUrls = selectedImages.map(index => images[index])
         onPublish(selectedImageUrls)
-        // 發布後清空選取狀態
-        setSelectedImages([])
     }
 
     const handleDownload = (imageUrl, index) => {

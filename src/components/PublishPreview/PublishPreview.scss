@@ -1,0 +1,91 @@
+@import '../../styles/variables';
+@import '../../styles/mixins';
+
+.publish-preview {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.publish-preview__section-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: $text-primary;
+    margin: 0 0 16px 0;
+}
+
+.publish-preview__images {
+    .publish-preview__image-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: 16px;
+    }
+
+    .publish-preview__image-item {
+        position: relative;
+        aspect-ratio: 1;
+        border-radius: 8px;
+        overflow: hidden;
+        background: rgba(255, 255, 255, 0.05);
+        border: 2px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .publish-preview__image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .publish-preview__image-number {
+        position: absolute;
+        top: 8px;
+        left: 8px;
+        background: rgba(0, 0, 0, 0.8);
+        color: white;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.875rem;
+        font-weight: 600;
+    }
+}
+
+.publish-preview__message {
+    .publish-preview__message-hint {
+        margin-top: 12px;
+        padding: 12px;
+        background: rgba(59, 130, 246, 0.1);
+        border-left: 3px solid #3b82f6;
+        border-radius: 4px;
+        font-size: 0.875rem;
+        color: $text-secondary;
+    }
+}
+
+.publish-preview__actions {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+    padding-top: 8px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+// 響應式設計
+@media (max-width: 768px) {
+    .publish-preview__images {
+        .publish-preview__image-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    .publish-preview__actions {
+        flex-direction: column-reverse;
+
+        button {
+            width: 100%;
+        }
+    }
+}

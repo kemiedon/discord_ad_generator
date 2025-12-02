@@ -45,9 +45,10 @@ const buildDiscordMessage = (formData) => {
  * @param {string[]} imageUrls - 圖片 Data URL 陣列
  * @param {Object} formData - 表單資料
  * @param {string} webhookUrl - Discord Webhook URL
+ * @param {string} customMessage - 自訂訊息內容（選填）
  * @returns {Promise<Object>} - 發布結果
  */
-export const publishToDiscord = async (imageUrls, formData, webhookUrl) => {
+export const publishToDiscord = async (imageUrls, formData, webhookUrl, customMessage = null) => {
   console.log('開始發布到 Discord...')
   console.log('圖片數量:', imageUrls.length)
   console.log('Webhook URL:', webhookUrl ? '已設定' : '未設定')
@@ -61,8 +62,8 @@ export const publishToDiscord = async (imageUrls, formData, webhookUrl) => {
   }
 
   try {
-    // 構建訊息內容
-    const messageContent = buildDiscordMessage(formData)
+    // 使用自訂訊息或構建預設訊息
+    const messageContent = customMessage || buildDiscordMessage(formData)
     console.log('訊息內容:', messageContent)
 
     // 準備 FormData

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import InputForm from '../InputForm'
 import PreviewGrid from '../PreviewGrid'
+import PublishPreview from '../PublishPreview'
 import './HomePage.scss'
 import { uploadFile } from '../../services/firebaseStorage'
 import { buildPrompt } from '../../utils/promptBuilder'
@@ -12,7 +13,9 @@ function HomePage() {
     const [generatedImages, setGeneratedImages] = useState([])
     const [isGenerating, setIsGenerating] = useState(false)
     const [isPublishing, setIsPublishing] = useState(false)
-    const [currentFormData, setCurrentFormData] = useState(null); // 儲存當前表單資料
+    const [currentFormData, setCurrentFormData] = useState(null) // 儲存當前表單資料
+    const [showPreview, setShowPreview] = useState(false)
+    const [previewImages, setPreviewImages] = useState([])
 
     const handleGenerate = async (formData) => {
         console.log('開始生成流程，表單資料：', formData)
@@ -53,8 +56,8 @@ function HomePage() {
         }
     }
 
-    const handlePublish = async (selectedImages) => {
-        console.log('發布圖片到 Discord：', selectedImages)
+    const handlePublish = (selectedImages) => {
+        console.log('準備發布圖片到 Discord：', selectedImages)
         
         if (!currentFormData) {
             toast.error('找不到表單資料，請重新生成圖片')
@@ -74,12 +77,25 @@ function HomePage() {
             return
         }
 
+        // 開啟預覽 Modal
+        setPreviewImages(selectedImages)
+        setShowPreview(true)
+    }
+
+    const handleConfirmPublish = async (customMessage) => {
+        console.log('確認發布到 Discord')
         setIsPublishing(true)
         const toastId = toast.loading('正在發布到 Discord...')
 
         try {
-            const result = await publishToDiscord(selectedImages, currentFormData, webhookUrl)
+            const result = await publishToDiscord(
+                previewImages,
+                currentFormData,
+                currentFormData.webhookUrl,
+                customMessage
+            )
             toast.success(`成功發布 ${result.imageCount} 張圖片到 Discord！`, { id: toastId })
+            setShowPreview(false)
         } catch (error) {
             console.error('發布失敗：', error)
             toast.error(`發布失敗: ${error.message}`, { id: toastId })
@@ -107,6 +123,15 @@ function HomePage() {
                     />
                 </div>
             </div>
+
+            <PublishPreview
+                isOpen={showPreview}
+                onClose={() => setShowPreview(false)}
+                images={previewImages}
+                formData={currentFormData}
+                onConfirm={handleConfirmPublish}
+                isPublishing={isPublishing}
+            />
         </div>
     )
 }

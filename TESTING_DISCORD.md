@@ -3,13 +3,17 @@
 ## 前置準備
 
 ### 1. 確認環境變數已設定
+
 檢查 `.env` 檔案中的 Discord Webhook URL：
+
 ```
 VITE_DISCORD_WEBHOOK_URL=https://discord.com/api/webhooks/你的webhook_id/你的webhook_token
 ```
 
 ### 2. 重新啟動開發伺服器
+
 修改 `.env` 後必須重新啟動：
+
 ```bash
 # 停止目前的開發伺服器 (Ctrl + C)
 # 重新啟動
@@ -19,6 +23,7 @@ npm run dev
 ## 測試流程
 
 ### 步驟 1: 填寫活動資訊
+
 1. 開啟瀏覽器訪問 `http://localhost:5173`
 2. 填寫以下欄位：
    - **活動主題**：例如「AI 工作坊」（必填）
@@ -34,18 +39,22 @@ npm run dev
    - **Discord Webhook URL**：應該自動填入環境變數的值
 
 ### 步驟 2: 生成圖片
+
 1. 點擊「生成圖片」按鈕
 2. 等待 30-60 秒
 3. 系統會生成 4 張圖片
 
 ### 步驟 3: 選擇並發布
+
 1. 點擊圖片左上角的核取方塊選擇要發布的圖片
 2. 可以使用「全選」按鈕快速選擇所有圖片
 3. 點擊「發布到 Discord」按鈕
 4. 等待上傳完成
 
 ### 步驟 4: 檢查 Discord 頻道
+
 前往你的 Discord 頻道，應該會看到：
+
 1. `@everyone` 提及通知
 2. 活動通知訊息，包含：
    - 活動主題
@@ -57,6 +66,7 @@ npm run dev
 ## 預期結果
 
 ### Discord 訊息格式
+
 ```
 @everyone
 
@@ -72,6 +82,7 @@ npm run dev
 ```
 
 ### 圖片檔名格式
+
 ```
 AI_工作坊_1.png
 AI_工作坊_2.png
@@ -82,39 +93,50 @@ AI_工作坊_4.png
 ## 常見問題排除
 
 ### 1. Webhook URL 欄位是空的
+
 **原因**：環境變數沒有載入  
 **解決方法**：
+
 - 確認 `.env` 檔案中有 `VITE_DISCORD_WEBHOOK_URL`
 - 重新啟動開發伺服器
 - 如果還是空的，可以手動輸入 Webhook URL
 
 ### 2. 顯示「Discord Webhook URL 格式不正確」
+
 **原因**：URL 格式錯誤  
 **正確格式**：`https://discord.com/api/webhooks/{數字ID}/{長字串token}`  
 **解決方法**：
+
 - 回到 Discord 伺服器設定重新複製 Webhook URL
 - 確保 URL 完整複製（不要有多餘空格）
 
 ### 3. 顯示「Discord Webhook URL 無效」(404 錯誤)
+
 **原因**：Webhook 已被刪除或 URL 錯誤  
 **解決方法**：
+
 - 到 Discord 伺服器檢查 Webhook 是否存在
 - 如果被刪除，重新建立新的 Webhook
 
 ### 4. 發布失敗但沒有錯誤訊息
+
 **檢查項目**：
+
 1. 開啟瀏覽器的開發者工具 (F12)
 2. 查看 Console 標籤的錯誤訊息
 3. 查看 Network 標籤的請求詳情
 4. 檢查 Discord Webhook 的權限設定
 
 ### 5. 圖片沒有上傳
+
 **可能原因**：
+
 - 圖片太大（Discord 限制 8MB）
 - 網路連線問題
 - Webhook 權限不足
 
 **解決方法**：
+
 - 檢查網路連線
 - 確認 Webhook 有上傳檔案的權限
 - 查看瀏覽器 Console 的詳細錯誤訊息
@@ -136,7 +158,9 @@ AI_工作坊_4.png
 ## 開發者除錯
 
 ### 查看詳細 Log
+
 開啟瀏覽器 Console (F12)，會看到：
+
 ```
 開始發布到 Discord...
 圖片數量: 2
@@ -148,7 +172,9 @@ Webhook URL: 已設定
 ```
 
 ### 測試 Webhook URL 驗證
+
 在瀏覽器 Console 執行：
+
 ```javascript
 // 測試有效的 URL
 validateWebhookUrl('https://discord.com/api/webhooks/123456789/abcdefg')
