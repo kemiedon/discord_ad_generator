@@ -24,7 +24,7 @@ function InputForm({ onGenerate, isGenerating }) {
         points: '',
         style: '',
         referenceImage: null,
-        webhookUrl: ''
+        webhookUrl: import.meta.env.VITE_DISCORD_WEBHOOK_URL || ''
     })
 
     const [errors, setErrors] = useState({})
