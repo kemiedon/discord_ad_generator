@@ -19,6 +19,12 @@ export const buildPrompt = (data) => {
 
   const selectedStyle = styleKeywords[style] || style;
 
+  // 構建重點項目區塊（只有當有重點項目時才顯示）
+  const keyPointsSection = points && points.length > 0 
+    ? `- Key Points:
+${points.map(p => `  * ${p}`).join('\n')}`
+    : '';
+
   // 核心 Prompt 結構
   const prompt = `
 Create a Discord event promotional image in ${selectedStyle}.
@@ -28,8 +34,7 @@ Content Requirements:
 - Brand: "Skill Hub"
 - Subtitle: "Kemie, Ayn, 聖博老師の學習殿堂"
 - Event Time: "${date} 晚上9:00-10:00" (clear and prominent)
-- Key Points:
-${points.map(p => `- ${p}`).join('\n')}
+${keyPointsSection}
 
 CRITICAL - Text Readability:
 - Background MUST include blurred areas or gradient color blocks for text placement
