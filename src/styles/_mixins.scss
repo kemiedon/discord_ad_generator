@@ -1,26 +1,25 @@
-@import './variables';
-
 // ==================== 響應式 Mixins ====================
+@use './variables' as vars;
 @mixin mobile {
-  @media (max-width: #{$breakpoint-mobile}) {
+  @media (max-width: 480px) {
     @content;
   }
 }
 
 @mixin tablet {
-  @media (min-width: #{$breakpoint-tablet}) {
+  @media (min-width: 768px) {
     @content;
   }
 }
 
 @mixin desktop {
-  @media (min-width: #{$breakpoint-desktop}) {
+  @media (min-width: 1024px) {
     @content;
   }
 }
 
 @mixin wide {
-  @media (min-width: #{$breakpoint-wide}) {
+  @media (min-width: 1280px) {
     @content;
   }
 }
@@ -45,15 +44,15 @@
 
 // ==================== 動畫 Mixins ====================
 @mixin transition($property: all) {
-  transition: $property $transition-base;
+  transition: $property vars.$transition-base;
 }
 
 @mixin hover-lift {
-  transition: transform $transition-base, box-shadow $transition-base;
+  transition: transform vars.$transition-base, box-shadow vars.$transition-base;
   
   &:hover {
     transform: translateY(-2px);
-    box-shadow: $shadow-lg;
+    box-shadow: vars.$shadow-lg;
   }
 }
 
@@ -76,12 +75,12 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: $spacing-sm $spacing-lg;
+  padding: vars.$spacing-sm vars.$spacing-lg;
   border: none;
-  border-radius: $radius-md;
-  font-weight: $font-weight-semibold;
+  border-radius: vars.$radius-md;
+  font-weight: vars.$font-weight-semibold;
   cursor: pointer;
-  transition: all $transition-base;
+  transition: all vars.$transition-base;
   
   &:disabled {
     opacity: 0.5;
@@ -91,8 +90,8 @@
 
 // ==================== 卡片 Mixins ====================
 @mixin card {
-  background: $bg-light;
-  border-radius: $radius-lg;
-  padding: $spacing-lg;
-  box-shadow: $shadow-md;
+  background: vars.$bg-light;
+  border-radius: vars.$radius-lg;
+  padding: vars.$spacing-lg;
+  box-shadow: vars.$shadow-md;
 }
