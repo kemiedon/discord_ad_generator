@@ -10,7 +10,7 @@
     top: $spacing-lg;
     right: $spacing-lg;
     z-index: 100;
-    background: $primary;
+    background: $discord-purple;
     color: white;
     border: none;
     padding: $spacing-sm $spacing-lg;
@@ -25,9 +25,9 @@
     transition: all 0.2s;
 
     &:hover {
-      background: darken($primary, 10%);
+      background: $discord-purple-dark;
       transform: translateY(-2px);
-      box-shadow: 0 8px 20px rgba($primary, 0.3);
+      box-shadow: 0 8px 20px rgba(88, 101, 242, 0.3);
     }
 
     &:active {

@@ -137,7 +137,7 @@
   &:hover {
     transform: translateY(-2px);
     box-shadow: vars.$shadow-lg;
-    border-color: vars.$primary;
+    border-color: vars.$discord-purple;
   }
 
   &__thumbnail {
@@ -198,8 +198,8 @@
   }
 
   &__style {
-    background: rgba(103, 110, 234, 0.1);
-    color: vars.$primary;
+    background: rgba(88, 101, 242, 0.1);
+    color: vars.$discord-purple;
     padding: 2px vars.$spacing-xs;
     border-radius: vars.$radius-sm;
     font-weight: 500;
