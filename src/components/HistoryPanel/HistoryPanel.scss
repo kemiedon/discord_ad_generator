@@ -1,0 +1,209 @@
+@use '../../styles/variables' as vars;
+@use '../../styles/mixins' as mixins;
+
+.history-panel {
+  background: vars.$bg-light;
+  border-radius: vars.$radius-lg;
+  padding: vars.$spacing-lg;
+  box-shadow: vars.$shadow-md;
+  
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: vars.$spacing-lg;
+    
+    h2 {
+      font-size: vars.$font-size-xl;
+      color: vars.$text-primary;
+      margin: 0;
+    }
+  }
+  
+  &__actions {
+    display: flex;
+    gap: vars.$spacing-sm;
+  }
+  
+  &__list {
+    display: flex;
+    flex-direction: column;
+    gap: vars.$spacing-md;
+    max-height: 600px;
+    overflow-y: auto;
+    
+    &::-webkit-scrollbar {
+      width: 8px;
+    }
+    
+    &::-webkit-scrollbar-track {
+      background: vars.$bg-dark;
+      border-radius: vars.$radius-sm;
+    }
+    
+    &::-webkit-scrollbar-thumb {
+      background: vars.$discord-purple;
+      border-radius: vars.$radius-sm;
+      
+      &:hover {
+        background: vars.$discord-purple-dark;
+      }
+    }
+  }
+  
+  &__empty {
+    text-align: center;
+    padding: vars.$spacing-3xl 0;
+    color: vars.$text-muted;
+    
+    .icon {
+      font-size: 48px;
+      margin-bottom: vars.$spacing-md;
+      opacity: 0.5;
+    }
+    
+    p {
+      font-size: vars.$font-size-lg;
+      margin: 0;
+    }
+  }
+}
+
+.history-item {
+  display: flex;
+  gap: vars.$spacing-md;
+  background: vars.$bg-dark;
+  border-radius: vars.$radius-md;
+  padding: vars.$spacing-md;
+  transition: vars.$transition-base;
+  cursor: pointer;
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: vars.$shadow-lg;
+  }
+  
+  &__thumbnail {
+    flex-shrink: 0;
+    width: 100px;
+    height: 100px;
+    border-radius: vars.$radius-sm;
+    overflow: hidden;
+    background: vars.$bg-darker;
+    
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+  
+  &__content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: vars.$spacing-xs;
+    min-width: 0; // 允許文字截斷
+  }
+  
+  &__title {
+    font-size: vars.$font-size-lg;
+    font-weight: vars.$font-weight-semibold;
+    color: vars.$text-primary;
+    margin: 0;
+    @include mixins.text-ellipsis;
+  }
+  
+  &__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: vars.$spacing-sm;
+    font-size: vars.$font-size-sm;
+    color: vars.$text-muted;
+  }
+  
+  &__date {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  
+  &__style {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px vars.$spacing-xs;
+    background: vars.$discord-purple;
+    color: vars.$text-primary;
+    border-radius: vars.$radius-sm;
+    font-size: vars.$font-size-xs;
+  }
+  
+  &__actions {
+    flex-shrink: 0;
+    display: flex;
+    gap: vars.$spacing-xs;
+  }
+  
+  &__button {
+    padding: vars.$spacing-xs;
+    background: transparent;
+    border: none;
+    color: vars.$text-muted;
+    cursor: pointer;
+    border-radius: vars.$radius-sm;
+    transition: vars.$transition-base;
+    
+    &:hover {
+      background: vars.$bg-darker;
+      color: vars.$text-primary;
+    }
+    
+    &--load {
+      color: vars.$success;
+      
+      &:hover {
+        background: rgba(vars.$success, 0.1);
+      }
+    }
+    
+    &--delete {
+      color: vars.$danger;
+      
+      &:hover {
+        background: rgba(vars.$danger, 0.1);
+      }
+    }
+  }
+}
+
+@include mixins.mobile {
+  .history-panel {
+    padding: vars.$spacing-md;
+    
+    &__header {
+      flex-direction: column;
+      gap: vars.$spacing-sm;
+      align-items: flex-start;
+    }
+    
+    &__list {
+      max-height: 400px;
+    }
+  }
+  
+  .history-item {
+    &__thumbnail {
+      width: 80px;
+      height: 80px;
+    }
+    
+    &__title {
+      font-size: vars.$font-size-base;
+    }
+    
+    &__meta {
+      font-size: vars.$font-size-xs;
+    }
+  }
+}

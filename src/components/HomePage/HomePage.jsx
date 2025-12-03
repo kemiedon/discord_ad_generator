@@ -2,10 +2,13 @@ import { useState, useRef } from 'react'
 import InputForm from '../InputForm'
 import PreviewGrid from '../PreviewGrid'
 import PublishPreview from '../PublishPreview'
+import HistoryPanel from '../HistoryPanel'
 import './HomePage.scss'
 import { buildPrompt } from '../../utils/promptBuilder'
 import { generateImages } from '../../services/nanoBananaService'
 import { publishToDiscord, validateWebhookUrl } from '../../services/discordService'
+import { compressImages } from '../../utils/imageCompression'
+import { saveHistory } from '../../services/historyService'
 import toast from 'react-hot-toast'
 
 function HomePage() {
@@ -15,7 +18,9 @@ function HomePage() {
     const [currentFormData, setCurrentFormData] = useState(null) // 儲存當前表單資料
     const [showPreview, setShowPreview] = useState(false)
     const [previewImages, setPreviewImages] = useState([])
+    const [loadedFormData, setLoadedFormData] = useState(null) // 從歷史載入的表單資料
     const previewGridRef = useRef(null)
+    const inputFormRef = useRef(null)
 
     const handleGenerate = async (formData) => {
         console.log('開始生成流程，表單資料：', formData)
@@ -60,8 +65,33 @@ function HomePage() {
             const images = await generateImages(prompt, referenceImageBase64)
             console.log('圖片生成成功：', images)
 
-            setGeneratedImages(images)
+            // 4. 壓縮圖片
+            toast.loading('正在壓縮圖片...', { id: toastId })
+            console.log('開始壓縮圖片...')
+            const compressedImages = await compressImages(images, {
+                maxSizeMB: 0.8,
+                maxWidthOrHeight: 1920
+            })
+            console.log('圖片壓縮完成')
+
+            setGeneratedImages(compressedImages)
             toast.success('圖片生成成功！', { id: toastId })
+
+            // 5. 自動保存到歷史記錄
+            try {
+                await saveHistory({
+                    topic: formData.topic,
+                    date: formData.date,
+                    points: formData.points,
+                    style: formData.style,
+                    images: compressedImages,
+                    webhookUrl: formData.webhookUrl
+                })
+                console.log('✅ 已保存到歷史記錄')
+            } catch (error) {
+                console.warn('保存歷史記錄失敗:', error)
+                // 不顯示錯誤,避免打擾使用者
+            }
         } catch (error) {
             console.error('生成流程失敗：', error)
             toast.error(`生成失敗: ${error.message}`, { id: toastId })
@@ -122,13 +152,25 @@ function HomePage() {
         }
     }
 
+    // 從歷史記錄載入資料
+    const handleLoadHistory = (formData) => {
+        console.log('載入歷史記錄:', formData)
+        setLoadedFormData(formData)
+        // 清空之前生成的圖片
+        setGeneratedImages([])
+        // 滾動到表單區域
+        window.scrollTo({ top: 0, behavior: 'smooth' })
+    }
+
     return (
         <div className="home-page">
             <div className="home-page__container">
                 <div className="home-page__form-section">
                     <InputForm
+                        ref={inputFormRef}
                         onGenerate={handleGenerate}
                         isGenerating={isGenerating}
+                        initialData={loadedFormData}
                     />
                 </div>
 
@@ -140,6 +182,10 @@ function HomePage() {
                         onPublish={handlePublish}
                         isPublishing={isPublishing}
                     />
+                </div>
+
+                <div className="home-page__history-section">
+                    <HistoryPanel onLoadHistory={handleLoadHistory} />
                 </div>
             </div>
 

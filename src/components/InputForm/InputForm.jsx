@@ -14,7 +14,7 @@ const STYLE_OPTIONS = [
     { value: 'retro-poster', label: '復古海報' }
 ]
 
-function InputForm({ onGenerate, isGenerating }) {
+function InputForm({ onGenerate, isGenerating, initialData }) {
     const [formData, setFormData] = useState({
         topic: '',
         date: '',
@@ -26,6 +26,23 @@ function InputForm({ onGenerate, isGenerating }) {
 
     const [errors, setErrors] = useState({})
     const dateInputRef = useRef(null)
+
+    // 當 initialData 改變時更新表單
+    useEffect(() => {
+        if (initialData) {
+            setFormData({
+                topic: initialData.topic || '',
+                date: initialData.date || '',
+                points: Array.isArray(initialData.points) 
+                    ? initialData.points.join('\n') 
+                    : (initialData.points || ''),
+                style: initialData.style || '',
+                referenceImage: null, // 不載入參考圖片
+                webhookUrl: initialData.webhookUrl || import.meta.env.VITE_DISCORD_WEBHOOK_URL || ''
+            })
+            setErrors({}) // 清空錯誤
+        }
+    }, [initialData])
 
     // 初始化 jQuery UI Datepicker
     useEffect(() => {
