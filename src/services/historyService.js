@@ -10,7 +10,8 @@ const COLLECTION_NAME = 'generation_history'
  * @param {string} record.date - 日期
  * @param {string[]} record.points - 重點項目
  * @param {string} record.style - 風格
- * @param {string[]} record.images - 圖片 Data URL 陣列
+ * @param {string} record.thumbnail - 縮圖 Data URL
+ * @param {number} record.imageCount - 圖片數量
  * @param {string} record.webhookUrl - Discord Webhook URL
  * @returns {Promise<string>} - 文檔 ID
  */
@@ -23,9 +24,8 @@ export const saveHistory = async (record) => {
       date: record.date || '',
       points: record.points || [],
       style: record.style || '',
-      // 只保存第一張圖片作為縮圖 (減少儲存空間)
-      thumbnail: record.images?.[0] || '',
-      imageCount: record.images?.length || 0,
+      thumbnail: record.thumbnail || '',
+      imageCount: record.imageCount || 0,
       webhookUrl: record.webhookUrl || '',
       createdAt: new Date().toISOString(),
       timestamp: Date.now()

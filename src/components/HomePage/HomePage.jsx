@@ -7,7 +7,7 @@ import './HomePage.scss'
 import { buildPrompt } from '../../utils/promptBuilder'
 import { generateImages } from '../../services/nanoBananaService'
 import { publishToDiscord, validateWebhookUrl } from '../../services/discordService'
-import { compressImages } from '../../utils/imageCompression'
+import { compressImages, generateThumbnail } from '../../utils/imageCompression'
 import { saveHistory } from '../../services/historyService'
 import toast from 'react-hot-toast'
 
@@ -80,12 +80,16 @@ function HomePage() {
 
             // 5. 自動保存到歷史記錄
             try {
+                // 生成小縮圖
+                const thumbnail = await generateThumbnail(compressedImages[0])
+                
                 await saveHistory({
                     topic: formData.topic,
                     date: formData.date,
                     points: formData.points,
                     style: formData.style,
-                    images: compressedImages,
+                    thumbnail: thumbnail, // 只保存縮圖
+                    imageCount: compressedImages.length,
                     webhookUrl: formData.webhookUrl
                 })
                 console.log('✅ 已保存到歷史記錄')

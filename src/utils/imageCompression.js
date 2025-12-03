@@ -100,3 +100,38 @@ export const compressImages = async (dataUrls, options = {}) => {
   console.log('批次壓縮完成')
   return compressedImages
 }
+
+/**
+ * 生成小縮圖 (用於歷史記錄)
+ * @param {string} dataUrl - 原始圖片的 base64 Data URL
+ * @returns {Promise<string>} - 縮圖 Data URL
+ */
+export const generateThumbnail = async (dataUrl) => {
+  try {
+    console.log('生成縮圖...')
+    
+    // 將 Data URL 轉換為 File
+    const file = dataUrlToFile(dataUrl)
+    
+    // 生成非常小的縮圖 (100KB 以下)
+    const thumbnailFile = await imageCompression(file, {
+      maxSizeMB: 0.05, // 50KB
+      maxWidthOrHeight: 300, // 小尺寸
+      useWebWorker: true,
+      initialQuality: 0.6
+    })
+
+    const thumbnailSizeKB = (thumbnailFile.size / 1024).toFixed(2)
+    console.log(`縮圖大小: ${thumbnailSizeKB} KB`)
+
+    // 轉回 Data URL
+    const thumbnailDataUrl = await fileToDataUrl(thumbnailFile)
+    
+    return thumbnailDataUrl
+  } catch (error) {
+    console.error('生成縮圖失敗:', error)
+    // 如果失敗，返回 null
+    return null
+  }
+}
+
