@@ -4,14 +4,120 @@
 
 根據 `PROMPT_GUIDE.md` 提示詞框架整理
 
-**目前版本**: v4.0.0  
+**目前版本**: v4.2.0  
 **最後更新**: 2025-12-03
 
 ---
 
 ## 📋 版本更新記錄
 
-### [4.0.0] - 2025-12-03
+### [4.2.0] - 2025-12-03 (下午)
+
+#### ✨ 新增功能
+
+- **圖片生成進度條**
+
+  - 創建 ProgressBar 組件實時顯示生成進度
+  - 顯示當前生成張數 (如 2/4) 和百分比
+  - 顯示詳細狀態訊息 (處理參考圖片、構建提示、生成中、壓縮、保存等)
+  - 漸層紫色進度條配合 Discord 主題
+  - 動態光澤效果和脈衝動畫增強視覺反饋
+
+- **Webhook 預設選項管理**
+  - 創建 `webhooks.js` 配置檔管理多個 Discord 頻道
+  - 添加 Webhook 預設選項下拉選單
+  - 支援快速切換不同頻道
+  - 選擇「自訂 Webhook URL」時才顯示輸入框
+  - 提供 `getWebhookById()`, `getWebhookByUrl()`, `getDefaultWebhook()` 工具函數
+
+#### 🎨 UI/UX 改進
+
+- **表單視覺優化**
+
+  - Input/TextArea/Select 背景色改為較淺的 $bg-secondary (#313338)
+  - 添加明顯的邊框 ($border-color: #3F4147)
+  - Focus 時背景色變為 $bg-light,邊框變為 $discord-purple
+  - 大幅提升表單可讀性和視覺層次
+
+- **歷史記錄 UI 重構**
+
+  - 從頁面底部改為彈出視窗 (Modal) 設計
+  - 在右上角添加「📜 歷史記錄」固定按鈕
+  - 彈出視窗背景遮罩支援 backdrop blur 效果
+  - 添加淡入淡出 (fadeIn) 和滑動 (slideUp) 動畫
+  - 載入歷史記錄後自動關閉視窗
+  - 生成或發布過程中禁用歷史記錄按鈕,防止操作衝突
+
+- **進度條動畫效果**
+  - 光澤動畫 (shimmer) - 2 秒循環
+  - 狀態文字脈衝動畫 - 1.5 秒循環
+  - 平滑的寬度過渡效果 (0.3s ease)
+
+#### 🐛 Bug 修復
+
+- **代碼語法錯誤修復**
+
+  - 修復 `dataUrl` 未定義錯誤 (在定義前使用)
+  - 移除 WEBHOOKS 陣列尾部多餘逗號
+  - 確保 imageData 和 mimeType 正確提取
+  - 移除重複的代碼行
+
+- **SCSS 編譯錯誤修復**
+
+  - 添加缺失的 SCSS 變數 ($border-color, $bg-secondary)
+  - 修正 $primary 為 $discord-purple (變數不存在)
+  - 移除 darken() 函數,直接使用 $discord-purple-dark
+  - 修正 rgba() 顏色值為硬編碼
+
+- **Firebase 測試和超時處理**
+  - 創建 `test-firebase.html` 用於測試 Firebase 連接
+  - historyService 加入 15 秒超時機制
+  - 修正測試頁面事件綁定問題 (module 中無法使用 onclick)
+  - 改用 addEventListener 綁定事件
+
+#### 🔧 技術改進
+
+- **圖片保存優化**
+
+  - 修復歷史記錄保存超時問題 (Firestore 1MB 限制)
+  - 新增 `generateThumbnail()` 函數生成小縮圖 (50KB, 300px)
+  - 只保存縮圖而非完整圖片到 Firestore
+  - 大幅減少寫入大小,避免超時
+
+- **進度回調機制**
+  - nanoBananaService 添加 `onProgress` 回調參數
+  - 每生成一張圖片時回調更新進度
+  - HomePage 整合進度狀態管理
+  - 實時更新 progressCurrent, progressTotal, progressStatus
+
+#### 📝 訊息內容更新
+
+- Discord 預設訊息改為「歡迎大家一起來討論、交流 AI 開發經驗,一起共同成長!」
+- 更符合 AI 開發社群的氛圍
+
+#### 📁 新增檔案
+
+- `src/components/common/ProgressBar/ProgressBar.jsx` - 進度條組件
+- `src/components/common/ProgressBar/ProgressBar.scss` - 進度條樣式
+- `src/components/common/ProgressBar/index.js` - 組件入口
+- `src/config/webhooks.js` - Webhook 配置管理
+- `test-firebase.html` - Firebase 連接測試工具
+
+#### 🎯 當前功能完整度
+
+**完全測試並穩定運行 ✅**
+
+- 圖片生成 (4 張) + 進度條顯示 ✅
+- 參考圖片圖生圖功能 ✅
+- Discord Webhook 發布 ✅
+- 發布預覽與訊息編輯 ✅
+- 歷史記錄 (彈出視窗) ✅
+- Webhook 預設選項管理 ✅
+- 圖片壓縮與縮圖生成 ✅
+- Firebase Firestore 整合 ✅
+- 響應式設計 (桌面+手機) ✅
+
+### [4.0.0] - 2025-12-03 (上午)
 
 #### ✅ 測試完成
 
