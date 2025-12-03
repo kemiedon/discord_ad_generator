@@ -6,17 +6,16 @@
 export const WEBHOOKS = [
   {
     id: 'main',
-    name: 'AI 開發交流主頻道',
-    url: 'https://discord.com/api/webhooks/1445363165465677885/mLeixRIomd5ZXHsr54N6cKim-IfRmoMUO-a3KjpwSWbu2e0FXwA0x6V7HqOfaH58HNZx',
+    name: 'Skill Hub佈告欄',
+    url: 'https://discord.com/api/webhooks/1445601560804724776/K1qyWMoMP-qtM6xsBa7rk2VmL2a3sDjE9JD36MQUvgfwEv4WT59oSx12dpOnw5gRvhGo',
     description: '主要的 AI 開發討論頻道'
   },
-  // 可以添加更多 webhook
-  // {
-  //   id: 'test',
-  //   name: '測試頻道',
-  //   url: 'https://discord.com/api/webhooks/YOUR_WEBHOOK_ID/YOUR_WEBHOOK_TOKEN',
-  //   description: '用於測試的頻道'
-  // },
+  {
+    id: 'Mv',
+    name: '廣瞻一般頻道',
+    url: 'https://discord.com/api/webhooks/1445363165465677885/mLeixRIomd5ZXHsr54N6cKim-IfRmoMUO-a3KjpwSWbu2e0FXwA0x6V7HqOfaH58HNZx',
+    description: '用於測試的頻道'
+  }
 ]
 
 /**
