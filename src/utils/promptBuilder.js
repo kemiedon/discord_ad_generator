@@ -8,13 +8,10 @@ export const buildPrompt = (data) => {
 
   // 風格關鍵字映射
   const styleKeywords = {
-    'cyberpunk': 'cyberpunk style, neon lights, futuristic city, high tech',
-    '90s-anime': '90s anime style, retro anime, cel shading, vintage aesthetic',
-    'hand-drawn-japanese': 'hand-drawn Japanese illustration, soft lines, warm colors, artistic',
-    'watercolor': 'watercolor painting, artistic, soft edges, blending colors',
-    'photorealistic': 'photorealistic, 8k resolution, highly detailed, cinematic lighting',
-    'retro-poster': 'retro poster design, vintage typography, bold colors, flat design',
-    'neon': 'neon style, glowing lines, dark background, vibrant colors'
+    'cyberpunk': 'cyberpunk style, neon lights, futuristic city skyline, high tech, glowing elements, dark background with bright accents',
+    'pixel-game': 'pixel art style, 8-bit retro game aesthetic, pixelated graphics, vibrant colors, nostalgic gaming vibe',
+    'photorealistic': 'photorealistic, ultra high definition 8k resolution, professional photography, cinematic lighting, depth of field, sharp details',
+    'retro-poster': 'vintage retro poster design, 1960s-1980s style, bold typography, limited color palette, flat design, classic advertisement aesthetic'
   };
 
   const selectedStyle = styleKeywords[style] || style;

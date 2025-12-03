@@ -9,12 +9,9 @@ import './InputForm.scss'
 // 風格選項
 const STYLE_OPTIONS = [
     { value: 'cyberpunk', label: '賽博龐克' },
-    { value: '90s-anime', label: '90年代動畫' },
-    { value: 'hand-drawn-japanese', label: '手繪日系' },
-    { value: 'watercolor', label: '水彩' },
-    { value: 'photorealistic', label: '高寫實' },
-    { value: 'retro-poster', label: '復古海報' },
-    { value: 'neon', label: '霓虹風' }
+    { value: 'pixel-game', label: 'Pixel遊戲' },
+    { value: 'photorealistic', label: '高寫實照片' },
+    { value: 'retro-poster', label: '復古海報' }
 ]
 
 function InputForm({ onGenerate, isGenerating }) {

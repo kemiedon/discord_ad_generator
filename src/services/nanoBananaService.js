@@ -3,14 +3,14 @@ import axios from 'axios'
 /**
  * 呼叫 Gemini (nano-banana pro) API 生成圖片
  * @param {string} prompt - 圖片生成提示詞
- * @param {string} [referenceImageUrl] - 參考圖片 URL (可選)
+ * @param {Object} [referenceImage] - 參考圖片物件 { data: base64字串, mimeType: MIME類型 } (可選)
  * @returns {Promise<string[]>} - 生成的圖片 base64 Data URL 陣列
  */
-export const generateImages = async (prompt, referenceImageUrl) => {
+export const generateImages = async (prompt, referenceImage) => {
   console.log('開始生成圖片...')
   console.log('Prompt:', prompt)
-  if (referenceImageUrl) {
-    console.log('✅ 使用參考圖片:', referenceImageUrl)
+  if (referenceImage) {
+    console.log('✅ 使用參考圖片，MIME類型:', referenceImage.mimeType)
   }
 
   try {
@@ -26,83 +26,111 @@ export const generateImages = async (prompt, referenceImageUrl) => {
     // 呼叫 API 生成 4 張圖片
     const imageUrls = []
     const numberOfImages = 4
+    const maxRetries = 2 // 每張圖片最多重試 2 次
 
     for (let i = 0; i < numberOfImages; i++) {
       console.log(`正在生成第 ${i + 1} 張圖片...`)
 
-      // 構建請求內容 - 正確的格式
-      const parts = []
-      
-      // 如果有參考圖片，先加入參考圖片
-      if (referenceImageUrl) {
+      let retryCount = 0
+      let success = false
+
+      while (retryCount <= maxRetries && !success) {
         try {
-          console.log('正在載入參考圖片...')
-          // 將參考圖片轉換為 base64（瀏覽器相容方式）
-          const imageResponse = await axios.get(referenceImageUrl, {
-            responseType: 'arraybuffer'
-          })
-          
-          // 使用瀏覽器原生方法轉換為 base64
-          const uint8Array = new Uint8Array(imageResponse.data)
-          let binaryString = ''
-          for (let j = 0; j < uint8Array.length; j++) {
-            binaryString += String.fromCharCode(uint8Array[j])
+          if (retryCount > 0) {
+            console.log(`重試第 ${retryCount} 次...`)
+            // 等待一段時間後重試 (指數退避)
+            await new Promise(resolve => setTimeout(resolve, 1000 * retryCount))
           }
-          const base64Image = btoa(binaryString)
-          const mimeType = imageResponse.headers['content-type'] || 'image/jpeg'
+
+          // 構建請求內容 - 正確的格式
+          const parts = []
           
-          parts.push({
-            inlineData: {
-              mimeType: mimeType,
-              data: base64Image
+          // 如果有參考圖片，先加入參考圖片
+          if (referenceImage) {
+            console.log('加入參考圖片到請求中...')
+            parts.push({
+              inlineData: {
+                mimeType: referenceImage.mimeType,
+                data: referenceImage.data
+              }
+            })
+            console.log('✅ 參考圖片已加入請求')
+          }
+          
+          // 加入文字提示詞
+          parts.push({ text: prompt })
+
+          // 構建請求體
+          const requestBody = {
+            contents: [{
+              parts: parts
+            }]
+          }
+
+          console.log('發送 API 請求...')
+
+          // 呼叫 REST API
+          const response = await axios.post(
+            `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-pro-image-preview:generateContent?key=${apiKey}`,
+            requestBody,
+            {
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              timeout: 60000 // 60 秒超時
             }
-          })
-          console.log('✅ 參考圖片載入成功')
+          )
+
+          // 解析回應
+          if (response.data?.candidates && response.data.candidates.length > 0) {
+            const parts = response.data.candidates[0].content.parts
+
+            for (const part of parts) {
+              if (part.inlineData) {
+                // 將 base64 圖片數據轉換為 Data URL
+                const imageData = part.inlineData.data
+                const mimeType = part.inlineData.mimeType || 'image/png'
+                const dataUrl = `data:${mimeType};base64,${imageData}`
+                
+                imageUrls.push(dataUrl)
+                console.log(`✅ 第 ${i + 1} 張圖片生成成功`)
+                success = true
+                break
+              }
+            }
+          }
+
+          if (!success) {
+            throw new Error('API 回應中沒有找到圖片數據')
+          }
+
         } catch (error) {
-          console.warn('⚠️ 參考圖片載入失敗，將使用純文字生成:', error.message)
-        }
-      }
-      
-      // 加入文字提示詞
-      parts.push({ text: prompt })
-
-      // 構建請求體
-      const requestBody = {
-        contents: [{
-          parts: parts
-        }]
-      }
-
-      console.log('發送 API 請求...')
-
-      // 呼叫 REST API
-      const response = await axios.post(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-pro-image-preview:generateContent?key=${apiKey}`,
-        requestBody,
-        {
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          timeout: 60000 // 60 秒超時
-        }
-      )
-
-      // 解析回應
-      if (response.data?.candidates && response.data.candidates.length > 0) {
-        const parts = response.data.candidates[0].content.parts
-
-        for (const part of parts) {
-          if (part.inlineData) {
-            // 將 base64 圖片數據轉換為 Data URL
-            const imageData = part.inlineData.data
-            const mimeType = part.inlineData.mimeType || 'image/png'
-            const dataUrl = `data:${mimeType};base64,${imageData}`
-            
-            imageUrls.push(dataUrl)
-            console.log(`✅ 第 ${i + 1} 張圖片生成成功`)
-            break
+          retryCount++
+          
+          if (error.response?.status === 503) {
+            console.warn(`⚠️ API 服務暫時無法使用 (503)`)
+            if (retryCount <= maxRetries) {
+              console.log(`將在 ${retryCount} 秒後重試...`)
+            }
+          } else if (error.response?.status === 429) {
+            console.warn(`⚠️ API 請求頻率過高 (429)`)
+            if (retryCount <= maxRetries) {
+              console.log(`將在 ${retryCount * 2} 秒後重試...`)
+              await new Promise(resolve => setTimeout(resolve, 1000 * retryCount))
+            }
+          } else {
+            console.error(`生成第 ${i + 1} 張圖片時發生錯誤:`, error.message)
+          }
+          
+          // 如果已經用完所有重試次數，拋出錯誤
+          if (retryCount > maxRetries) {
+            throw error
           }
         }
+      }
+
+      if (!success) {
+        throw new Error(`無法生成第 ${i + 1} 張圖片，已重試 ${maxRetries} 次`)
       }
     }
 
@@ -115,10 +143,33 @@ export const generateImages = async (prompt, referenceImageUrl) => {
 
   } catch (error) {
     console.error('圖片生成失敗:', error.message)
+    
+    let errorMessage = '圖片生成失敗'
+    
     if (error.response) {
       console.error('API 錯誤詳情:', error.response.data)
       console.error('HTTP 狀態碼:', error.response.status)
+      
+      switch (error.response.status) {
+        case 503:
+          errorMessage = 'API 服務暫時無法使用，請稍後再試'
+          break
+        case 429:
+          errorMessage = 'API 請求頻率過高，請稍後再試'
+          break
+        case 400:
+          errorMessage = 'API 請求格式錯誤'
+          break
+        case 401:
+          errorMessage = 'API 金鑰無效或已過期'
+          break
+        default:
+          errorMessage = `API 錯誤 (${error.response.status})`
+      }
+    } else if (error.message?.includes('timeout')) {
+      errorMessage = 'API 請求超時，請檢查網路連線'
     }
-    throw new Error(`圖片生成失敗: ${error.message}`)
+    
+    throw new Error(errorMessage)
   }
 }

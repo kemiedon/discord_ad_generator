@@ -23,7 +23,12 @@ const dataUrlToBlob = (dataUrl) => {
  * @returns {string} - 格式化的訊息內容
  */
 const buildDiscordMessage = (formData) => {
-  const { topic, date, points } = formData
+  // 防止 formData 為 null 或 undefined
+  if (!formData) {
+    return '@everyone\n\n【活動通知】\n📅 晚上9:00-10:00\n\n💬 歡迎大家一起來討論、交流經驗，一起進步！'
+  }
+
+  const { topic = '', date = '', points = [] } = formData
 
   let message = `@everyone\n\n【活動通知】${topic}\n📅 ${date} 晚上9:00-10:00\n`
 

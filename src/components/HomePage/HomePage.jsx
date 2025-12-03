@@ -3,7 +3,6 @@ import InputForm from '../InputForm'
 import PreviewGrid from '../PreviewGrid'
 import PublishPreview from '../PublishPreview'
 import './HomePage.scss'
-import { uploadFile } from '../../services/firebaseStorage'
 import { buildPrompt } from '../../utils/promptBuilder'
 import { generateImages } from '../../services/nanoBananaService'
 import { publishToDiscord, validateWebhookUrl } from '../../services/discordService'
@@ -27,14 +26,28 @@ function HomePage() {
         const toastId = toast.loading('正在生成圖片，請稍候...')
 
         try {
-            let referenceImageUrl = null
+            let referenceImageBase64 = null
 
-            // 1. 上傳參考圖片（如果有）
+            // 1. 處理參考圖片（如果有）
             if (formData.referenceImage) {
-                toast.loading('正在上傳參考圖片...', { id: toastId })
-                console.log('正在上傳參考圖片...')
-                referenceImageUrl = await uploadFile(formData.referenceImage, 'reference_images')
-                console.log('參考圖片上傳成功：', referenceImageUrl)
+                toast.loading('正在處理參考圖片...', { id: toastId })
+                console.log('正在處理參考圖片...')
+                
+                // 直接在瀏覽器中讀取檔案並轉換為 base64
+                referenceImageBase64 = await new Promise((resolve, reject) => {
+                    const reader = new FileReader()
+                    reader.onload = (e) => {
+                        // 取得 base64 字串（不含 data:image/xxx;base64, 前綴）
+                        const base64 = e.target.result.split(',')[1]
+                        resolve({
+                            data: base64,
+                            mimeType: formData.referenceImage.type
+                        })
+                    }
+                    reader.onerror = reject
+                    reader.readAsDataURL(formData.referenceImage)
+                })
+                console.log('✅ 參考圖片處理成功')
             }
 
             // 2. 構建 Prompt
@@ -44,7 +57,7 @@ function HomePage() {
             // 3. 呼叫圖片生成 API
             toast.loading('正在生成圖片，請稍候（可能需要 30-60 秒）...', { id: toastId })
             console.log('正在生成圖片...')
-            const images = await generateImages(prompt, referenceImageUrl)
+            const images = await generateImages(prompt, referenceImageBase64)
             console.log('圖片生成成功：', images)
 
             setGeneratedImages(images)
