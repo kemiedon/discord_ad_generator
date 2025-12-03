@@ -25,7 +25,7 @@ const dataUrlToBlob = (dataUrl) => {
 const buildDiscordMessage = (formData) => {
   // 防止 formData 為 null 或 undefined
   if (!formData) {
-    return '@everyone\n\n【活動通知】\n📅 晚上9:00-10:00\n\n💬 歡迎大家一起來討論、交流經驗，一起進步！'
+    return '@everyone\n\n【活動通知】\n📅 晚上9:00-10:00\n\n💬 歡迎大家一起來討論、交流AI開發經驗，一起共同成長！'
   }
 
   const { topic = '', date = '', points = [] } = formData
@@ -40,7 +40,7 @@ const buildDiscordMessage = (formData) => {
     })
   }
 
-  message += `\n💬 歡迎大家一起來討論、交流經驗，一起進步！`
+  message += `\n💬 歡迎大家一起來討論、交流AI開發經驗，一起共同成長！`
 
   return message
 }
