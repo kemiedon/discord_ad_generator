@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Firebase 連接測試</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #1a1a1a;
+            color: #fff;
+        }
+        .test-section {
+            background: #2a2a2a;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+        button {
+            background: #5865F2;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #4752C4;
+        }
+        .result {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 4px;
+            white-space: pre-wrap;
+        }
+        .success {
+            background: #23A559;
+        }
+        .error {
+            background: #F23F43;
+        }
+        .info {
+            background: #676EEA;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔥 Firebase Firestore 連接測試</h1>
+
+    <div class="test-section">
+        <h2>測試 1: 檢查 Firebase 配置</h2>
+        <button onclick="testConfig()">測試配置</button>
+        <div id="config-result" class="result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>測試 2: 寫入測試數據</h2>
+        <button onclick="testWrite()">測試寫入</button>
+        <div id="write-result" class="result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>測試 3: 讀取數據</h2>
+        <button onclick="testRead()">測試讀取</button>
+        <div id="read-result" class="result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>測試 4: 保存小縮圖</h2>
+        <button onclick="testThumbnail()">測試縮圖保存</button>
+        <div id="thumbnail-result" class="result"></div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getFirestore, collection, addDoc, getDocs, query, orderBy, limit } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBUZo5K1iyG3FNt2h6qgxu2uDqPAO_dAx8",
+            authDomain: "discord-ad-b9fef.firebaseapp.com",
+            projectId: "discord-ad-b9fef",
+            storageBucket: "discord-ad-b9fef.appspot.com",
+            messagingSenderId: "17063291796",
+            appId: "1:17063291796:web:389d0682ab9a5122a47d81"
+        };
+
+        let app, db;
+
+        window.testConfig = function() {
+            const resultDiv = document.getElementById('config-result');
+            try {
+                app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                resultDiv.className = 'result success';
+                resultDiv.textContent = '✅ Firebase 初始化成功！\n' + 
+                    'Project ID: ' + firebaseConfig.projectId;
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.textContent = '❌ 初始化失敗:\n' + error.message;
+            }
+        }
+
+        window.testWrite = async function() {
+            const resultDiv = document.getElementById('write-result');
+            resultDiv.className = 'result info';
+            resultDiv.textContent = '⏳ 正在測試寫入... (最多等待 10 秒)';
+            
+            try {
+                if (!db) {
+                    app = initializeApp(firebaseConfig);
+                    db = getFirestore(app);
+                }
+                
+                const testData = {
+                    topic: '測試主題',
+                    date: new Date().toISOString().split('T')[0],
+                    points: ['測試點1', '測試點2'],
+                    style: 'cyberpunk',
+                    thumbnail: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==',
+                    imageCount: 4,
+                    webhookUrl: 'https://test.com',
+                    createdAt: new Date().toISOString(),
+                    timestamp: Date.now()
+                };
+
+                console.log('嘗試寫入數據:', testData);
+                
+                // 加入超時機制
+                const timeoutPromise = new Promise((_, reject) => 
+                    setTimeout(() => reject(new Error('寫入超時 (10秒)')), 10000)
+                );
+                
+                const writePromise = addDoc(collection(db, 'generation_history'), testData);
+                
+                const docRef = await Promise.race([writePromise, timeoutPromise]);
+                
+                resultDiv.className = 'result success';
+                resultDiv.textContent = '✅ 寫入成功！\n文檔 ID: ' + docRef.id;
+            } catch (error) {
+                resultDiv.className = 'result error';
+                
+                let errorMsg = '❌ 寫入失敗:\n' + error.message + '\n\n';
+                
+                if (error.code === 'permission-denied') {
+                    errorMsg += '原因: 權限被拒絕\n\n解決方法:\n' +
+                        '1. 前往 Firebase Console\n' +
+                        '2. Firestore Database → Rules\n' +
+                        '3. 修改規則為:\n\n' +
+                        'rules_version = "2";\n' +
+                        'service cloud.firestore {\n' +
+                        '  match /databases/{database}/documents {\n' +
+                        '    match /{document=**} {\n' +
+                        '      allow read, write: if true;\n' +
+                        '    }\n' +
+                        '  }\n' +
+                        '}\n\n' +
+                        '4. 點擊「發布」';
+                } else if (error.message.includes('超時')) {
+                    errorMsg += '原因: 連接超時\n\n可能原因:\n' +
+                        '1. Firestore 尚未完全啟用\n' +
+                        '2. 網路連接問題\n' +
+                        '3. 防火牆阻擋\n\n' +
+                        '請等待幾分鐘後重試';
+                } else {
+                    errorMsg += '詳細錯誤碼: ' + error.code + '\n' +
+                        '錯誤類型: ' + error.name;
+                }
+                
+                resultDiv.textContent = errorMsg;
+                console.error('詳細錯誤:', error);
+            }
+        }
+
+        window.testRead = async function() {
+            const resultDiv = document.getElementById('read-result');
+            resultDiv.className = 'result info';
+            resultDiv.textContent = '⏳ 正在讀取數據...';
+            
+            try {
+                if (!db) {
+                    app = initializeApp(firebaseConfig);
+                    db = getFirestore(app);
+                }
+                
+                const q = query(
+                    collection(db, 'generation_history'),
+                    orderBy('timestamp', 'desc'),
+                    limit(5)
+                );
+                
+                const querySnapshot = await getDocs(q);
+                const records = [];
+                querySnapshot.forEach((doc) => {
+                    records.push({ id: doc.id, ...doc.data() });
+                });
+                
+                resultDiv.className = 'result success';
+                resultDiv.textContent = '✅ 讀取成功！\n' + 
+                    '找到 ' + records.length + ' 筆記錄\n\n' +
+                    JSON.stringify(records, null, 2);
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.textContent = '❌ 讀取失敗:\n' + error.message;
+                console.error('詳細錯誤:', error);
+            }
+        }
+
+        window.testThumbnail = async function() {
+            const resultDiv = document.getElementById('thumbnail-result');
+            resultDiv.className = 'result info';
+            resultDiv.textContent = '⏳ 正在測試縮圖保存...';
+            
+            try {
+                if (!db) {
+                    app = initializeApp(firebaseConfig);
+                    db = getFirestore(app);
+                }
+                
+                // 生成一個較大的測試縮圖
+                const canvas = document.createElement('canvas');
+                canvas.width = 300;
+                canvas.height = 300;
+                const ctx = canvas.getContext('2d');
+                ctx.fillStyle = '#5865F2';
+                ctx.fillRect(0, 0, 300, 300);
+                ctx.fillStyle = 'white';
+                ctx.font = '30px Arial';
+                ctx.fillText('Test Thumbnail', 50, 150);
+                
+                const thumbnailDataUrl = canvas.toDataURL('image/jpeg', 0.6);
+                const sizeKB = (thumbnailDataUrl.length * 0.75 / 1024).toFixed(2);
+                
+                const testData = {
+                    topic: '縮圖測試',
+                    date: new Date().toISOString().split('T')[0],
+                    points: ['測試'],
+                    style: 'test',
+                    thumbnail: thumbnailDataUrl,
+                    imageCount: 1,
+                    webhookUrl: '',
+                    createdAt: new Date().toISOString(),
+                    timestamp: Date.now()
+                };
+
+                const docRef = await addDoc(collection(db, 'generation_history'), testData);
+                
+                resultDiv.className = 'result success';
+                resultDiv.textContent = '✅ 縮圖保存成功！\n' + 
+                    '文檔 ID: ' + docRef.id + '\n' +
+                    '縮圖大小: ' + sizeKB + ' KB';
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.textContent = '❌ 縮圖保存失敗:\n' + error.message;
+                console.error('詳細錯誤:', error);
+            }
+        }
+
+        // 自動執行配置測試
+        window.addEventListener('load', () => {
+            testConfig();
+        });
+    </script>
+</body>
+</html>

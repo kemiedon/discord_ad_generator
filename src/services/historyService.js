@@ -31,12 +31,29 @@ export const saveHistory = async (record) => {
       timestamp: Date.now()
     }
 
-    const docRef = await addDoc(collection(db, COLLECTION_NAME), historyData)
+    // 加入超時機制 (15秒)
+    const timeoutPromise = new Promise((_, reject) => 
+      setTimeout(() => reject(new Error('Firestore 寫入超時 (15秒)')), 15000)
+    )
+    
+    const writePromise = addDoc(collection(db, COLLECTION_NAME), historyData)
+    
+    const docRef = await Promise.race([writePromise, timeoutPromise])
     console.log('✅ 記錄已保存，ID:', docRef.id)
     
     return docRef.id
   } catch (error) {
     console.error('保存記錄失敗:', error)
+    
+    // 提供更友好的錯誤訊息
+    if (error.code === 'permission-denied') {
+      throw new Error('Firebase 權限不足,請檢查 Firestore 安全規則')
+    } else if (error.message.includes('超時')) {
+      throw new Error('連接 Firebase 超時,請檢查網路連接')
+    } else if (error.code === 'unavailable') {
+      throw new Error('Firebase 服務暫時無法使用')
+    }
+    
     throw new Error(`保存失敗: ${error.message}`)
   }
 }
