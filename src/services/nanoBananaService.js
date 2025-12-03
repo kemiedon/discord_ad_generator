@@ -93,6 +93,11 @@ export const generateImages = async (prompt, referenceImage, onProgress) => {
 
             for (const part of parts) {
               if (part.inlineData) {
+                // 將 base64 圖片數據轉換為 Data URL
+                const imageData = part.inlineData.data
+                const mimeType = part.inlineData.mimeType || 'image/png'
+                const dataUrl = `data:${mimeType};base64,${imageData}`
+                
                 imageUrls.push(dataUrl)
                 console.log(`✅ 第 ${i + 1} 張圖片生成成功`)
                 
@@ -101,11 +106,6 @@ export const generateImages = async (prompt, referenceImage, onProgress) => {
                   onProgress(i + 1, numberOfImages, `✅ 第 ${i + 1} 張圖片生成成功`)
                 }
                 
-                success = true
-                break dataUrl = `data:${mimeType};base64,${imageData}`
-                
-                imageUrls.push(dataUrl)
-                console.log(`✅ 第 ${i + 1} 張圖片生成成功`)
                 success = true
                 break
               }
