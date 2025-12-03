@@ -173,6 +173,7 @@ function HomePage() {
                 className="home-page__history-btn"
                 onClick={() => setShowHistory(true)}
                 title="查看生成歷史"
+                disabled={isGenerating || isPublishing}
             >
                 📜 歷史記錄
             </button>

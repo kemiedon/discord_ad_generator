@@ -24,14 +24,20 @@
     gap: $spacing-xs;
     transition: all 0.2s;
 
-    &:hover {
+    &:hover:not(:disabled) {
       background: $discord-purple-dark;
       transform: translateY(-2px);
       box-shadow: 0 8px 20px rgba(88, 101, 242, 0.3);
     }
 
-    &:active {
+    &:active:not(:disabled) {
       transform: translateY(0);
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      background: $discord-purple;
     }
   }
   
