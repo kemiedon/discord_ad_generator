@@ -1,23 +1,38 @@
 # Discord 廣告生成器
 
-快速生成精美的 Discord 社群宣傳圖片
+快速生成精美的 Discord 社群宣傳圖片並直接發布
+
+## ✅ 最新測試狀態 (v4.0.0 - 2025-12-03)
+
+### 已測試通過功能
+
+- ✅ **一般生圖功能**: 使用 Gemini 3 Pro Image Preview API 生成圖片
+- ✅ **Discord 發布功能**: 透過 Webhook 直接發布到 Discord 頻道
+- ✅ **預覽功能**: 在發布前預覽所選圖片和訊息內容
+- ✅ **錯誤處理**: 自動重試機制,友善錯誤提示
+
+### 待測試功能
+
+- ⚠️ **參考圖片圖生圖**: 上傳參考圖片並依照風格生成 (已修復,待測試)
 
 ## 🚀 功能特色
 
-- ✨ 7 種預設風格選擇（賽博龐克、90年代動畫、手繪日系等）
+- ✨ 4 種預設風格選擇（賽博龐克、Pixel 遊戲、高寫實照片、復古海報）
 - 🎨 支援上傳參考圖片，生成類似風格
 - 📱 響應式設計，支援桌面、平板、手機
-- 🤖 一鍵發布到多個 Discord 伺服器
-- 📝 歷史記錄管理
-- 💾 批次下載功能
+- 🤖 一鍵發布到 Discord (透過 Webhook)
+- 🔄 自動重試機制，提升成功率
+- 🎯 即時預覽，所見即所得
 
 ## 📋 技術棧
 
-- **前端框架**: React 18 + Vite
-- **樣式**: SASS
-- **後端服務**: Firebase (Storage, Firestore, Functions)
-- **圖片生成**: nano-banana pro API
-- **Discord 整合**: Discord.js
+- **前端框架**: React 18.3.1 + Vite 6.0.5
+- **樣式**: SASS 1.83.0
+- **HTTP 客戶端**: Axios 1.7.9
+- **通知系統**: React Hot Toast 2.6.0
+- **後端服務**: Firebase 11.0.2
+- **圖片生成 API**: Google Gemini 3 Pro Image Preview
+- **Discord 整合**: Discord Webhook API
 
 ## 🛠️ 安裝步驟
 
@@ -29,19 +44,22 @@ npm install
 
 ### 2. 設定環境變數
 
-複製 `.env.example` 為 `.env`：
+建立 `.env` 檔案：
 
 ```bash
-cp .env.example .env
+touch .env
 ```
 
-然後填入您的 API Keys：
+填入您的 API Keys：
 
 ```env
-# nano-banana pro API
-VITE_NANO_BANANA_API_KEY=your_api_key_here
+# Google Gemini API (必填)
+VITE_NANO_BANANA_API_KEY=your_gemini_api_key_here
 
-# Firebase Configuration
+# Discord Webhook URL (必填)
+VITE_DISCORD_WEBHOOK_URL=your_discord_webhook_url_here
+
+# Firebase Configuration (選填 - 目前未使用)
 VITE_FIREBASE_API_KEY=your_firebase_api_key
 VITE_FIREBASE_AUTH_DOMAIN=your_project_id.firebaseapp.com
 VITE_FIREBASE_PROJECT_ID=your_project_id
@@ -50,20 +68,27 @@ VITE_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
 VITE_FIREBASE_APP_ID=your_app_id
 ```
 
-### 3. Firebase 設定
+**取得 API Keys:**
+
+1. **Gemini API Key**:
+
+   - 前往 [Google AI Studio](https://makersuite.google.com/app/apikey)
+   - 建立新的 API Key
+
+2. **Discord Webhook URL**:
+   - 在 Discord 頻道設定中選擇「整合」→「Webhook」
+   - 建立新 Webhook 並複製 URL
+
+### 3. Firebase 設定 (選填)
+
+> 注意: 目前版本不需要 Firebase,參考圖片處理已改為瀏覽器本地處理
+
+如果未來需要使用 Firebase:
 
 1. 前往 [Firebase Console](https://console.firebase.google.com/)
-2. 建立新專案或選擇現有專案
-3. 啟用以下服務：
-   - **Storage**: 用於儲存圖片
-   - **Firestore**: 用於儲存歷史記錄和 Discord 伺服器設定
-   - **Functions**: 用於處理 API 呼叫（可選）
-   - **Hosting**: 用於部署網站
-4. 在專案設定中取得 Firebase 設定資訊，貼到 `.env` 檔案中
-
-### 4. Discord Bot 設定
-
-請參考 [Discord Bot 設定指南](./docs/DISCORD_SETUP.md)
+2. 建立新專案
+3. 啟用 Storage 和 Firestore
+4. 取得設定資訊並填入 `.env`
 
 ## 🎮 運行專案
 
@@ -133,25 +158,51 @@ discord-ad-generator/
 
 - **主題**: 輸入活動主題（例如：AI 工作坊）
 - **日期**: 選擇活動日期
-- **重點**: 輸入活動重點項目（支援多個）
-- **參考圖片**: 上傳參考圖片（可選）
-- **風格**: 選擇圖片風格
+- **重點**: 輸入活動重點項目（每行一個重點）
+- **風格**: 選擇圖片風格（賽博龐克、Pixel 遊戲、高寫實照片、復古海報）
+- **參考圖片**: 上傳參考圖片（可選，用於圖生圖）
+- **Discord Webhook URL**: 輸入 Discord Webhook URL
 
 ### 2. 生成圖片
 
-點擊「生成」按鈕，系統將生成 3 張圖片供您預覽
+點擊「生成圖片」按鈕，系統將：
 
-### 3. 發布到 Discord
+1. 根據您的輸入構建 AI 提示詞
+2. 調用 Gemini API 生成 4 張圖片
+3. 顯示在預覽區域
 
-1. 選擇要發布的圖片
-2. 選擇目標 Discord 伺服器
-3. 點擊「發布」按鈕
+### 3. 預覽與發布
 
-## 📚 文檔
+1. 在預覽區域勾選要發布的圖片
+2. 點擊「預覽選中的圖片」按鈕
+3. 在彈出視窗中：
+   - 檢視選中的圖片
+   - 編輯發布訊息（支援 @everyone 標註）
+   - 確認後點擊「確認發布到 Discord」
+4. 圖片和訊息將自動發送到指定的 Discord 頻道
 
-- [Discord Bot 設定指南](./docs/DISCORD_SETUP.md)
-- [部署指南](./docs/DEPLOYMENT.md)
-- [專案規格書](./SPEC/MAIN.md)
+### 4. 常見問題
+
+**Q: 圖片生成失敗怎麼辦？**  
+A: 系統會自動重試最多 2 次。如果仍然失敗，請檢查：
+
+- API Key 是否正確
+- 網路連線是否正常
+- 提示詞是否過長或包含敏感內容
+
+**Q: Discord 發布失敗？**  
+A: 請確認：
+
+- Webhook URL 格式正確
+- Webhook 沒有被刪除或停用
+- 圖片總大小不超過 8MB
+
+**Q: 參考圖片功能無效？**  
+A: 目前圖生圖功能已修復但待測試。請：
+
+- 確保圖片格式為 JPG 或 PNG
+- 圖片大小不超過 5MB
+- 如果仍有問題請回報
 
 ## 🤝 貢獻
 
