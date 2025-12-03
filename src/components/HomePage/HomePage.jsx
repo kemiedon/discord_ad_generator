@@ -3,6 +3,7 @@ import InputForm from '../InputForm'
 import PreviewGrid from '../PreviewGrid'
 import PublishPreview from '../PublishPreview'
 import HistoryPanel from '../HistoryPanel'
+import ProgressBar from '../common/ProgressBar'
 import './HomePage.scss'
 import { buildPrompt } from '../../utils/promptBuilder'
 import { generateImages } from '../../services/nanoBananaService'
@@ -20,6 +21,12 @@ function HomePage() {
     const [previewImages, setPreviewImages] = useState([])
     const [loadedFormData, setLoadedFormData] = useState(null) // 從歷史載入的表單資料
     const [showHistory, setShowHistory] = useState(false) // 歷史記錄 modal 開關
+    
+    // 進度狀態
+    const [progressCurrent, setProgressCurrent] = useState(0)
+    const [progressTotal, setProgressTotal] = useState(4)
+    const [progressStatus, setProgressStatus] = useState('')
+    
     const previewGridRef = useRef(null)
     const inputFormRef = useRef(null)
 
@@ -28,6 +35,11 @@ function HomePage() {
         setIsGenerating(true)
         setGeneratedImages([]) // 清空之前的圖片
         setCurrentFormData(formData) // 儲存表單資料
+        
+        // 重置進度
+        setProgressCurrent(0)
+        setProgressTotal(4)
+        setProgressStatus('準備開始生成...')
 
         const toastId = toast.loading('正在生成圖片，請稍候...')
 
@@ -36,6 +48,7 @@ function HomePage() {
 
             // 1. 處理參考圖片（如果有）
             if (formData.referenceImage) {
+                setProgressStatus('正在處理參考圖片...')
                 toast.loading('正在處理參考圖片...', { id: toastId })
                 console.log('正在處理參考圖片...')
                 
@@ -57,16 +70,24 @@ function HomePage() {
             }
 
             // 2. 構建 Prompt
+            setProgressStatus('正在構建生成提示詞...')
             const prompt = buildPrompt(formData)
             console.log('構建的 Prompt：', prompt)
 
-            // 3. 呼叫圖片生成 API
+            // 3. 呼叫圖片生成 API (附帶進度回調)
+            setProgressStatus('正在生成圖片...')
             toast.loading('正在生成圖片，請稍候（可能需要 30-60 秒）...', { id: toastId })
             console.log('正在生成圖片...')
-            const images = await generateImages(prompt, referenceImageBase64)
+            
+            const images = await generateImages(prompt, referenceImageBase64, (current, total, status) => {
+                setProgressCurrent(current)
+                setProgressTotal(total)
+                setProgressStatus(status)
+            })
             console.log('圖片生成成功：', images)
 
             // 4. 壓縮圖片
+            setProgressStatus('正在壓縮圖片...')
             toast.loading('正在壓縮圖片...', { id: toastId })
             console.log('開始壓縮圖片...')
             const compressedImages = await compressImages(images, {
@@ -77,9 +98,11 @@ function HomePage() {
 
             setGeneratedImages(compressedImages)
             toast.success('圖片生成成功！', { id: toastId })
+            setProgressStatus('✅ 生成完成！')
 
             // 5. 自動保存到歷史記錄
             try {
+                setProgressStatus('正在保存歷史記錄...')
                 // 生成小縮圖
                 const thumbnail = await generateThumbnail(compressedImages[0])
                 
@@ -93,6 +116,7 @@ function HomePage() {
                     webhookUrl: formData.webhookUrl
                 })
                 console.log('✅ 已保存到歷史記錄')
+                setProgressStatus('✅ 已保存到歷史記錄')
             } catch (error) {
                 console.warn('保存歷史記錄失敗:', error)
                 // 不顯示錯誤,避免打擾使用者
@@ -189,6 +213,15 @@ function HomePage() {
                 </div>
 
                 <div className="home-page__preview-section">
+                    {isGenerating && (
+                        <ProgressBar
+                            current={progressCurrent}
+                            total={progressTotal}
+                            label="圖片生成進度"
+                            status={progressStatus}
+                        />
+                    )}
+                    
                     <PreviewGrid
                         ref={previewGridRef}
                         images={generatedImages}

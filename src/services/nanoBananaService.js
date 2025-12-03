@@ -4,9 +4,10 @@ import axios from 'axios'
  * 呼叫 Gemini (nano-banana pro) API 生成圖片
  * @param {string} prompt - 圖片生成提示詞
  * @param {Object} [referenceImage] - 參考圖片物件 { data: base64字串, mimeType: MIME類型 } (可選)
+ * @param {Function} [onProgress] - 進度回調函數 (current, total, status)
  * @returns {Promise<string[]>} - 生成的圖片 base64 Data URL 陣列
  */
-export const generateImages = async (prompt, referenceImage) => {
+export const generateImages = async (prompt, referenceImage, onProgress) => {
   console.log('開始生成圖片...')
   console.log('Prompt:', prompt)
   if (referenceImage) {
@@ -30,6 +31,11 @@ export const generateImages = async (prompt, referenceImage) => {
 
     for (let i = 0; i < numberOfImages; i++) {
       console.log(`正在生成第 ${i + 1} 張圖片...`)
+      
+      // 更新進度
+      if (onProgress) {
+        onProgress(i, numberOfImages, `正在生成第 ${i + 1} 張圖片...`)
+      }
 
       let retryCount = 0
       let success = false
@@ -87,10 +93,16 @@ export const generateImages = async (prompt, referenceImage) => {
 
             for (const part of parts) {
               if (part.inlineData) {
-                // 將 base64 圖片數據轉換為 Data URL
-                const imageData = part.inlineData.data
-                const mimeType = part.inlineData.mimeType || 'image/png'
-                const dataUrl = `data:${mimeType};base64,${imageData}`
+                imageUrls.push(dataUrl)
+                console.log(`✅ 第 ${i + 1} 張圖片生成成功`)
+                
+                // 更新進度
+                if (onProgress) {
+                  onProgress(i + 1, numberOfImages, `✅ 第 ${i + 1} 張圖片生成成功`)
+                }
+                
+                success = true
+                break dataUrl = `data:${mimeType};base64,${imageData}`
                 
                 imageUrls.push(dataUrl)
                 console.log(`✅ 第 ${i + 1} 張圖片生成成功`)
