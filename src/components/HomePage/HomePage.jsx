@@ -19,6 +19,7 @@ function HomePage() {
     const [showPreview, setShowPreview] = useState(false)
     const [previewImages, setPreviewImages] = useState([])
     const [loadedFormData, setLoadedFormData] = useState(null) // 從歷史載入的表單資料
+    const [showHistory, setShowHistory] = useState(false) // 歷史記錄 modal 開關
     const previewGridRef = useRef(null)
     const inputFormRef = useRef(null)
 
@@ -164,6 +165,14 @@ function HomePage() {
 
     return (
         <div className="home-page">
+            <button
+                className="home-page__history-btn"
+                onClick={() => setShowHistory(true)}
+                title="查看生成歷史"
+            >
+                📜 歷史記錄
+            </button>
+
             <div className="home-page__container">
                 <div className="home-page__form-section">
                     <InputForm
@@ -183,11 +192,13 @@ function HomePage() {
                         isPublishing={isPublishing}
                     />
                 </div>
-
-                <div className="home-page__history-section">
-                    <HistoryPanel onLoadHistory={handleLoadHistory} />
-                </div>
             </div>
+
+            <HistoryPanel
+                isOpen={showHistory}
+                onClose={() => setShowHistory(false)}
+                onLoadHistory={handleLoadHistory}
+            />
 
             <PublishPreview
                 isOpen={showPreview}

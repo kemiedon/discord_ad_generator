@@ -2,16 +2,40 @@
 @use '../../styles/mixins' as mixins;
 
 .history-panel {
-  background: vars.$bg-light;
-  border-radius: vars.$radius-lg;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.2s ease-out;
   padding: vars.$spacing-lg;
-  box-shadow: vars.$shadow-md;
-  
+
+  &__modal {
+    background: vars.$bg-light;
+    border-radius: vars.$radius-lg;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+    width: 100%;
+    max-width: 1200px;
+    max-height: 85vh;
+    display: flex;
+    flex-direction: column;
+    animation: slideUp 0.3s ease-out;
+    overflow: hidden;
+  }
+
   &__header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: vars.$spacing-lg;
+    padding: vars.$spacing-lg;
+    border-bottom: 1px solid vars.$border-color;
+    flex-shrink: 0;
     
     h2 {
       font-size: vars.$font-size-xl;
@@ -23,45 +47,76 @@
   &__actions {
     display: flex;
     gap: vars.$spacing-sm;
+    align-items: center;
+  }
+
+  &__close-btn {
+    background: transparent;
+    border: none;
+    color: vars.$text-secondary;
+    font-size: 24px;
+    cursor: pointer;
+    padding: vars.$spacing-xs vars.$spacing-sm;
+    margin-left: vars.$spacing-md;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: vars.$radius-sm;
+
+    &:hover {
+      background: rgba(242, 63, 67, 0.1);
+      color: vars.$error;
+    }
   }
   
   &__list {
     display: flex;
     flex-direction: column;
     gap: vars.$spacing-md;
-    max-height: 600px;
+    padding: vars.$spacing-lg;
     overflow-y: auto;
+    flex: 1;
+    max-height: calc(85vh - 100px);
     
+    // 自訂捲軸樣式
     &::-webkit-scrollbar {
       width: 8px;
     }
-    
+
     &::-webkit-scrollbar-track {
-      background: vars.$bg-dark;
+      background: rgba(0, 0, 0, 0.05);
       border-radius: vars.$radius-sm;
     }
-    
+
     &::-webkit-scrollbar-thumb {
-      background: vars.$discord-purple;
+      background: rgba(0, 0, 0, 0.2);
       border-radius: vars.$radius-sm;
       
       &:hover {
-        background: vars.$discord-purple-dark;
+        background: rgba(0, 0, 0, 0.3);
       }
     }
   }
-  
+
   &__empty {
     text-align: center;
-    padding: vars.$spacing-3xl 0;
-    color: vars.$text-muted;
-    
+    padding: vars.$spacing-3xl vars.$spacing-lg;
+    color: vars.$text-secondary;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
     .icon {
-      font-size: 48px;
-      margin-bottom: vars.$spacing-md;
+      font-size: 64px;
+      margin-bottom: vars.$spacing-lg;
       opacity: 0.5;
     }
-    
+
     p {
       font-size: vars.$font-size-lg;
       margin: 0;
@@ -72,138 +127,166 @@
 .history-item {
   display: flex;
   gap: vars.$spacing-md;
-  background: vars.$bg-dark;
-  border-radius: vars.$radius-md;
   padding: vars.$spacing-md;
-  transition: vars.$transition-base;
+  background: vars.$bg-secondary;
+  border: 1px solid vars.$border-color;
+  border-radius: vars.$radius-md;
   cursor: pointer;
-  
+  transition: all 0.2s;
+
   &:hover {
     transform: translateY(-2px);
     box-shadow: vars.$shadow-lg;
+    border-color: vars.$primary;
   }
-  
+
   &__thumbnail {
     flex-shrink: 0;
-    width: 100px;
-    height: 100px;
+    width: 120px;
+    height: 120px;
     border-radius: vars.$radius-sm;
     overflow: hidden;
-    background: vars.$bg-darker;
-    
+    background: vars.$bg-dark;
+
     img {
       width: 100%;
       height: 100%;
       object-fit: cover;
     }
   }
-  
+
+  &__no-image {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 48px;
+    opacity: 0.3;
+  }
+
   &__content {
     flex: 1;
     display: flex;
     flex-direction: column;
     gap: vars.$spacing-xs;
-    min-width: 0; // 允許文字截斷
+    min-width: 0;
   }
-  
+
   &__title {
     font-size: vars.$font-size-lg;
-    font-weight: vars.$font-weight-semibold;
+    font-weight: 600;
     color: vars.$text-primary;
     margin: 0;
-    @include mixins.text-ellipsis;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
-  
+
   &__meta {
     display: flex;
-    flex-wrap: wrap;
-    gap: vars.$spacing-sm;
+    gap: vars.$spacing-md;
     font-size: vars.$font-size-sm;
-    color: vars.$text-muted;
-  }
-  
-  &__date {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-  }
-  
-  &__style {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    padding: 2px vars.$spacing-xs;
-    background: vars.$discord-purple;
-    color: vars.$text-primary;
-    border-radius: vars.$radius-sm;
-    font-size: vars.$font-size-xs;
-  }
-  
-  &__actions {
-    flex-shrink: 0;
-    display: flex;
-    gap: vars.$spacing-xs;
-  }
-  
-  &__button {
-    padding: vars.$spacing-xs;
-    background: transparent;
-    border: none;
-    color: vars.$text-muted;
-    cursor: pointer;
-    border-radius: vars.$radius-sm;
-    transition: vars.$transition-base;
-    
-    &:hover {
-      background: vars.$bg-darker;
-      color: vars.$text-primary;
+    color: vars.$text-secondary;
+    flex-wrap: wrap;
+
+    span {
+      display: inline-flex;
+      align-items: center;
+      gap: vars.$spacing-xs;
     }
-    
+  }
+
+  &__style {
+    background: rgba(103, 110, 234, 0.1);
+    color: vars.$primary;
+    padding: 2px vars.$spacing-xs;
+    border-radius: vars.$radius-sm;
+    font-weight: 500;
+  }
+
+  &__actions {
+    display: flex;
+    flex-direction: column;
+    gap: vars.$spacing-xs;
+    flex-shrink: 0;
+  }
+
+  &__button {
+    background: vars.$bg-light;
+    border: 1px solid vars.$border-color;
+    color: vars.$text-primary;
+    cursor: pointer;
+    padding: vars.$spacing-sm;
+    border-radius: vars.$radius-sm;
+    transition: all 0.2s;
+    font-size: 18px;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &:hover {
+      transform: scale(1.05);
+    }
+
     &--load {
-      color: vars.$success;
-      
       &:hover {
         background: rgba(35, 165, 89, 0.1);
+        border-color: vars.$success;
+        color: vars.$success;
       }
     }
-    
+
     &--delete {
-      color: vars.$error;
-      
       &:hover {
         background: rgba(242, 63, 67, 0.1);
+        border-color: vars.$error;
+        color: vars.$error;
       }
+    }
+  }
+
+  // 平板和手機版調整
+  @include mixins.tablet {
+    &__thumbnail {
+      width: 100px;
+      height: 100px;
+    }
+  }
+
+  @include mixins.mobile {
+    flex-direction: column;
+    
+    &__thumbnail {
+      width: 100%;
+      height: 200px;
+    }
+
+    &__actions {
+      flex-direction: row;
+      justify-content: flex-end;
     }
   }
 }
 
-@include mixins.mobile {
-  .history-panel {
-    padding: vars.$spacing-md;
-    
-    &__header {
-      flex-direction: column;
-      gap: vars.$spacing-sm;
-      align-items: flex-start;
-    }
-    
-    &__list {
-      max-height: 400px;
-    }
+@keyframes fadeIn {
+  from {
+    opacity: 0;
   }
-  
-  .history-item {
-    &__thumbnail {
-      width: 80px;
-      height: 80px;
-    }
-    
-    &__title {
-      font-size: vars.$font-size-base;
-    }
-    
-    &__meta {
-      font-size: vars.$font-size-xs;
-    }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }

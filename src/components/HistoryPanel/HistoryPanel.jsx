@@ -5,7 +5,7 @@ import { getHistory, deleteHistory, clearAllHistory } from '../../services/histo
 import toast from 'react-hot-toast'
 import { format } from 'date-fns'
 
-function HistoryPanel({ onLoadHistory }) {
+function HistoryPanel({ isOpen, onClose, onLoadHistory }) {
     const [history, setHistory] = useState([])
     const [isLoading, setIsLoading] = useState(false)
 
@@ -25,8 +25,10 @@ function HistoryPanel({ onLoadHistory }) {
 
     // 組件載入時自動載入歷史
     useEffect(() => {
-        loadHistory()
-    }, [])
+        if (isOpen) {
+            loadHistory()
+        }
+    }, [isOpen])
 
     // 載入指定記錄
     const handleLoad = (record) => {
@@ -43,6 +45,7 @@ function HistoryPanel({ onLoadHistory }) {
         
         onLoadHistory(formData)
         toast.success('已載入歷史記錄')
+        onClose() // 載入後關閉 modal
     }
 
     // 刪除指定記錄
@@ -99,29 +102,39 @@ function HistoryPanel({ onLoadHistory }) {
         'retro-poster': '復古海報'
     }
 
+    if (!isOpen) return null
+
     return (
-        <div className="history-panel">
-            <div className="history-panel__header">
-                <h2>生成歷史</h2>
-                <div className="history-panel__actions">
-                    <Button
-                        variant="secondary"
-                        size="small"
-                        onClick={loadHistory}
-                        disabled={isLoading}
-                    >
-                        🔄 重新載入
-                    </Button>
-                    <Button
-                        variant="danger"
-                        size="small"
-                        onClick={handleClearAll}
-                        disabled={isLoading || history.length === 0}
-                    >
-                        🗑️ 清空全部
-                    </Button>
+        <div className="history-panel" onClick={onClose}>
+            <div className="history-panel__modal" onClick={(e) => e.stopPropagation()}>
+                <div className="history-panel__header">
+                    <h2>生成歷史</h2>
+                    <div className="history-panel__actions">
+                        <Button
+                            variant="secondary"
+                            size="small"
+                            onClick={loadHistory}
+                            disabled={isLoading}
+                        >
+                            🔄 重新載入
+                        </Button>
+                        <Button
+                            variant="danger"
+                            size="small"
+                            onClick={handleClearAll}
+                            disabled={isLoading || history.length === 0}
+                        >
+                            🗑️ 清空全部
+                        </Button>
+                        <button
+                            className="history-panel__close-btn"
+                            onClick={onClose}
+                            aria-label="關閉"
+                        >
+                            ✕
+                        </button>
+                    </div>
                 </div>
-            </div>
 
             {isLoading ? (
                 <div className="history-panel__empty">
@@ -192,6 +205,7 @@ function HistoryPanel({ onLoadHistory }) {
                     ))}
                 </div>
             )}
+            </div>
         </div>
     )
 }
