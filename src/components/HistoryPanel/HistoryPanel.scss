@@ -163,15 +163,15 @@
       color: vars.$success;
       
       &:hover {
-        background: rgba(vars.$success, 0.1);
+        background: rgba(35, 165, 89, 0.1);
       }
     }
     
     &--delete {
-      color: vars.$danger;
+      color: vars.$error;
       
       &:hover {
-        background: rgba(vars.$danger, 0.1);
+        background: rgba(242, 63, 67, 0.1);
       }
     }
   }
