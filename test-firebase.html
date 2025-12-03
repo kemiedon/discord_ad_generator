@@ -53,25 +53,25 @@
 
     <div class="test-section">
         <h2>測試 1: 檢查 Firebase 配置</h2>
-        <button onclick="testConfig()">測試配置</button>
+        <button id="btn-config">測試配置</button>
         <div id="config-result" class="result"></div>
     </div>
 
     <div class="test-section">
         <h2>測試 2: 寫入測試數據</h2>
-        <button onclick="testWrite()">測試寫入</button>
+        <button id="btn-write">測試寫入</button>
         <div id="write-result" class="result"></div>
     </div>
 
     <div class="test-section">
         <h2>測試 3: 讀取數據</h2>
-        <button onclick="testRead()">測試讀取</button>
+        <button id="btn-read">測試讀取</button>
         <div id="read-result" class="result"></div>
     </div>
 
     <div class="test-section">
         <h2>測試 4: 保存小縮圖</h2>
-        <button onclick="testThumbnail()">測試縮圖保存</button>
+        <button id="btn-thumbnail">測試縮圖保存</button>
         <div id="thumbnail-result" class="result"></div>
     </div>
 
@@ -90,7 +90,7 @@
 
         let app, db;
 
-        window.testConfig = function() {
+        function testConfig() {
             const resultDiv = document.getElementById('config-result');
             try {
                 app = initializeApp(firebaseConfig);
@@ -104,7 +104,7 @@
             }
         }
 
-        window.testWrite = async function() {
+        async function testWrite() {
             const resultDiv = document.getElementById('write-result');
             resultDiv.className = 'result info';
             resultDiv.textContent = '⏳ 正在測試寫入... (最多等待 10 秒)';
@@ -175,7 +175,7 @@
             }
         }
 
-        window.testRead = async function() {
+        async function testRead() {
             const resultDiv = document.getElementById('read-result');
             resultDiv.className = 'result info';
             resultDiv.textContent = '⏳ 正在讀取數據...';
@@ -209,7 +209,7 @@
             }
         }
 
-        window.testThumbnail = async function() {
+        async function testThumbnail() {
             const resultDiv = document.getElementById('thumbnail-result');
             resultDiv.className = 'result info';
             resultDiv.textContent = '⏳ 正在測試縮圖保存...';
@@ -259,9 +259,16 @@
             }
         }
 
-        // 自動執行配置測試
+        // 綁定事件監聽器
         window.addEventListener('load', () => {
+            // 自動執行配置測試
             testConfig();
+            
+            // 綁定按鈕事件
+            document.getElementById('btn-config').addEventListener('click', testConfig);
+            document.getElementById('btn-write').addEventListener('click', testWrite);
+            document.getElementById('btn-read').addEventListener('click', testRead);
+            document.getElementById('btn-thumbnail').addEventListener('click', testThumbnail);
         });
     </script>
 </body>
