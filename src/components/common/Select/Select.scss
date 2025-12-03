@@ -27,8 +27,8 @@
 .select {
   width: 100%;
   padding: $spacing-sm $spacing-md;
-  background: $bg-light;
-  border: 1px solid transparent;
+  background: $bg-secondary;
+  border: 1px solid $border-color;
   border-radius: $radius-md;
   color: $text-primary;
   font-size: $font-size-base;
@@ -50,7 +50,7 @@
   &:focus {
     outline: none;
     border-color: $discord-purple;
-    background-color: $bg-dark;
+    background-color: $bg-light;
   }
   
   &:disabled {

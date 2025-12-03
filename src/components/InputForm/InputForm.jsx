@@ -4,6 +4,7 @@ import TextArea from '../common/TextArea'
 import Select from '../common/Select'
 import FileUpload from '../common/FileUpload'
 import Button from '../common/Button'
+import { WEBHOOKS, getWebhookByUrl } from '../../config/webhooks'
 import './InputForm.scss'
 
 // 風格選項
@@ -21,7 +22,8 @@ function InputForm({ onGenerate, isGenerating, initialData }) {
         points: '',
         style: '',
         referenceImage: null,
-        webhookUrl: import.meta.env.VITE_DISCORD_WEBHOOK_URL || ''
+        webhookUrl: import.meta.env.VITE_DISCORD_WEBHOOK_URL || '',
+        webhookPreset: 'custom' // 新增: 預設選項
     })
 
     const [errors, setErrors] = useState({})
@@ -30,6 +32,7 @@ function InputForm({ onGenerate, isGenerating, initialData }) {
     // 當 initialData 改變時更新表單
     useEffect(() => {
         if (initialData) {
+            const currentWebhook = getWebhookByUrl(initialData.webhookUrl)
             setFormData({
                 topic: initialData.topic || '',
                 date: initialData.date || '',
@@ -38,7 +41,8 @@ function InputForm({ onGenerate, isGenerating, initialData }) {
                     : (initialData.points || ''),
                 style: initialData.style || '',
                 referenceImage: null, // 不載入參考圖片
-                webhookUrl: initialData.webhookUrl || import.meta.env.VITE_DISCORD_WEBHOOK_URL || ''
+                webhookUrl: initialData.webhookUrl || import.meta.env.VITE_DISCORD_WEBHOOK_URL || '',
+                webhookPreset: currentWebhook ? currentWebhook.id : 'custom'
             })
             setErrors({}) // 清空錯誤
         }
@@ -82,6 +86,26 @@ function InputForm({ onGenerate, isGenerating, initialData }) {
                 ...prev,
                 [field]: ''
             }))
+        }
+    }
+
+    // 處理 Webhook 預設選項變更
+    const handleWebhookPresetChange = (presetId) => {
+        if (presetId === 'custom') {
+            setFormData(prev => ({
+                ...prev,
+                webhookPreset: 'custom',
+                webhookUrl: ''
+            }))
+        } else {
+            const webhook = WEBHOOKS.find(w => w.id === presetId)
+            if (webhook) {
+                setFormData(prev => ({
+                    ...prev,
+                    webhookPreset: presetId,
+                    webhookUrl: webhook.url
+                }))
+            }
         }
     }
 
@@ -185,15 +209,31 @@ function InputForm({ onGenerate, isGenerating, initialData }) {
                 disabled={isGenerating}
             />
 
-            <Input
-                label="Discord Webhook URL（可選）"
-                placeholder="https://discord.com/api/webhooks/..."
-                value={formData.webhookUrl}
-                onChange={(e) => handleChange('webhookUrl', e.target.value)}
-                error={errors.webhookUrl}
+            <Select
+                label="Discord 頻道"
+                value={formData.webhookPreset}
+                onChange={(e) => handleWebhookPresetChange(e.target.value)}
+                options={[
+                    ...WEBHOOKS.map(webhook => ({
+                        value: webhook.id,
+                        label: webhook.name
+                    })),
+                    { value: 'custom', label: '自訂 Webhook URL' }
+                ]}
                 disabled={isGenerating}
-                type="url"
             />
+
+            {formData.webhookPreset === 'custom' && (
+                <Input
+                    label="自訂 Webhook URL"
+                    placeholder="https://discord.com/api/webhooks/..."
+                    value={formData.webhookUrl}
+                    onChange={(e) => handleChange('webhookUrl', e.target.value)}
+                    error={errors.webhookUrl}
+                    disabled={isGenerating}
+                    type="url"
+                />
+            )}
 
             <Button
                 type="submit"
