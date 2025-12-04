@@ -10,7 +10,8 @@
   &__label {
     font-size: $font-size-sm;
     font-weight: $font-weight-medium;
-    color: $text-secondary;
+    color: #29adff;
+    font-family: 'Noto Sans TC', sans-serif;
   }
   
   &__required {
@@ -26,26 +27,29 @@
 
 .file-upload {
   position: relative;
-  border: 2px dashed $text-muted;
-  border-radius: $radius-lg;
+  border: 2px dashed #313638;
+  border-radius: 8px;
   padding: $spacing-2xl;
   text-align: center;
-  background: $bg-light;
+  background: #222034;
   transition: all $transition-base;
   cursor: pointer;
   
   &:hover:not(&--disabled) {
-    border-color: $discord-purple;
-    background: $bg-dark;
+    border-color: #f8b700;
+    border-style: solid;
+    background: #222034;
+    box-shadow: 0 0 0 3px rgba(248, 183, 0, 0.1);
   }
   
   &--dragging {
-    border-color: $neon-blue;
-    background: rgba($neon-blue, 0.1);
+    border-color: #f8b700;
+    border-style: solid;
+    background: rgba(248, 183, 0, 0.1);
   }
   
   &--error {
-    border-color: $error;
+    border-color: #ff004d;
   }
   
   &--disabled {
@@ -70,15 +74,20 @@
   
   &__icon {
     font-size: 3rem;
+    color: #29adff;
+    
+    i {
+      font-size: 3rem;
+    }
   }
   
   &__text {
-    color: $text-primary;
+    color: #fff;
     font-weight: $font-weight-medium;
   }
   
   &__hint {
-    color: $text-muted;
+    color: rgba(41, 173, 255, 0.7);
     font-size: $font-size-sm;
   }
   
@@ -116,17 +125,17 @@
   }
   
   &__clear-btn {
-    background: $error;
-    color: $text-primary;
+    background: #ff004d;
+    color: #ffffff;
     border: none;
+    border-radius: 0;
     padding: $spacing-xs $spacing-sm;
-    border-radius: $radius-sm;
     font-size: $font-size-sm;
     cursor: pointer;
     transition: all $transition-fast;
     
     &:hover:not(:disabled) {
-        filter: brightness(0.8);
+        background: #cc003d;
     }
     
     &:disabled {

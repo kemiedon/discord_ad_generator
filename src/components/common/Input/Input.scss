@@ -10,7 +10,8 @@
   &__label {
     font-size: $font-size-sm;
     font-weight: $font-weight-medium;
-    color: $text-secondary;
+    color: #29adff;
+    font-family: 'Noto Sans TC', sans-serif;
   }
   
   &__required {
@@ -27,33 +28,37 @@
 .input {
   width: 100%;
   padding: $spacing-sm $spacing-md;
-  background: $bg-secondary;
-  border: 1px solid $border-color;
-  border-radius: $radius-md;
-  color: $text-primary;
+  background: #222034;
+  border: 3px solid #313638;
+  border-radius: 0;
+  color: #fff;
   font-size: $font-size-base;
+  font-family: 'Noto Sans TC', 'Courier New', monospace;
   transition: all $transition-base;
   
   &::placeholder {
-    color: $text-muted;
+    color: rgba(255, 255, 255, 0.4);
   }
   
   &:focus {
     outline: none;
-    border-color: $discord-purple;
-    background: $bg-light;
+    border-color: #f8b700;
+    background: #222034;
+    box-shadow: 0 0 0 3px rgba(248, 183, 0, 0.1);
   }
   
   &:disabled {
-    opacity: 0.5;
+    opacity: 0.4;
     cursor: not-allowed;
+    border-color: #313638;
   }
   
   &--error {
-    border-color: $error;
+    border-color: #ff004d;
     
     &:focus {
-      border-color: $error;
+      border-color: #ff004d;
+      box-shadow: 0 0 0 3px rgba(255, 0, 77, 0.1);
     }
   }
 }

@@ -1,0 +1,92 @@
+@use './variables' as *;
+
+// ==================== 主題變數定義 ====================
+
+// Minecraft Theme
+$mc-grass-green: #5CAF3E;
+$mc-dirt-brown: #8B5E3C;
+$mc-stone-gray: #757575;
+$mc-sky-blue: #ADD8E6;
+$mc-text-shadow: 2px 2px 0px #000;
+
+// ==================== Mixins ====================
+
+@mixin pixel-border($color: #000, $width: 4px) {
+  box-shadow: 
+    (-$width) 0 0 0 $color,
+    $width 0 0 0 $color,
+    0 (-$width) 0 0 $color,
+    0 $width 0 0 $color;
+  margin: $width;
+}
+
+@mixin pixel-corners($size: 4px) {
+  clip-path: polygon(
+    0 $size, $size $size, $size 0,
+    calc(100% - #{$size}) 0, calc(100% - #{$size}) $size, 100% $size,
+    100% calc(100% - #{$size}), calc(100% - #{$size}) calc(100% - #{$size}), calc(100% - #{$size}) 100%,
+    $size 100%, $size calc(100% - #{$size}), 0 calc(100% - #{$size})
+  );
+}
+
+// ==================== 主題樣式 ====================
+
+:root[data-theme="minecraft"] {
+  --theme-bg: #1a1a1a; // 深色背景基底
+  --theme-primary: #{$mc-grass-green};
+  --theme-secondary: #{$mc-stone-gray};
+  --theme-accent: #{$mc-dirt-brown};
+  --theme-text: #ffffff;
+  --theme-font-heading: 'Press Start 2P', cursive;
+  --theme-font-body: 'DotGothic16', sans-serif;
+  --theme-card-bg: #2F2F2F;
+  --theme-border-color: #000000;
+  
+  // Minecraft 背景：石磚紋理效果
+  --theme-bg-image: 
+    linear-gradient(0deg, transparent 24%, rgba(255, 255, 255, 0.05) 25%, rgba(255, 255, 255, 0.05) 26%, transparent 27%, transparent 74%, rgba(255, 255, 255, 0.05) 75%, rgba(255, 255, 255, 0.05) 76%, transparent 77%, transparent),
+    linear-gradient(90deg, transparent 24%, rgba(255, 255, 255, 0.05) 25%, rgba(255, 255, 255, 0.05) 26%, transparent 27%, transparent 74%, rgba(255, 255, 255, 0.05) 75%, rgba(255, 255, 255, 0.05) 76%, transparent 77%, transparent),
+    linear-gradient(90deg, #1a1a1a 0%, #1f1f1f 50%, #1a1a1a 100%);
+  --theme-bg-size: 50px 50px, 50px 50px, 100% 100%;
+  --theme-bg-pos: 0 0, 0 0, 0 0;
+}
+
+// ==================== 全域樣式覆蓋 ====================
+
+body {
+  background-color: var(--theme-bg);
+  background-image: var(--theme-bg-image);
+  background-size: var(--theme-bg-size);
+  background-position: var(--theme-bg-pos);
+  color: var(--theme-text);
+  font-family: var(--theme-font-body);
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Noto Sans TC', sans-serif;
+  font-weight: 700;
+}
+
+// 卡片樣式覆蓋 (Minecraft 主題)
+.input-form, .preview-grid, .history-panel__content {
+  background: var(--theme-card-bg) !important;
+  border: 4px solid var(--theme-border-color) !important;
+  box-shadow: inset -4px -4px 0 rgba(0,0,0,0.5), inset 4px 4px 0 rgba(255,255,255,0.1);
+  border-radius: 0 !important;
+}
+
+// 按鈕樣式覆蓋 (Minecraft 主題)
+button {
+  font-family: 'Noto Sans TC', sans-serif !important;
+  font-weight: 500 !important;
+  border: 2px solid #000 !important;
+  box-shadow: inset -2px -2px 0 rgba(0,0,0,0.5), inset 2px 2px 0 rgba(255,255,255,0.2) !important;
+  border-radius: 0 !important;
+  text-shadow: 1px 1px 0 #000;
+  font-family: 'DotGothic16', 'Noto Sans TC', sans-serif !important;
+  
+  &:active {
+    box-shadow: inset 2px 2px 0 rgba(0,0,0,0.5) !important;
+  }
+}

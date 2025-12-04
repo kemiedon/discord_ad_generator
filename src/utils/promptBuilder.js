@@ -28,7 +28,7 @@ Create a Discord event promotional image in ${selectedStyle}.
 
 Content Requirements:
 - Main Title: "${topic}" (bold, sans-serif font, adjust size if text is long, no line breaks)
-- Brand: "Skill Hub"
+- Brand: Display "Skill Hub" text with the logo icon (skill_hub_icon.svg) positioned directly to the left of the text. The logo should be small and proportional to the text size, maintaining a cohesive appearance.
 - Subtitle: "Kemie, Ayn, 聖博老師の學習殿堂"
 - Event Time: "${date} 晚上9:00-10:00" (clear and prominent)
 ${keyPointsSection}

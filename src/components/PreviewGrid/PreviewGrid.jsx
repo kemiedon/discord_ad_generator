@@ -56,7 +56,7 @@ const PreviewGrid = forwardRef(({ images, isGenerating, onPublish, isPublishing 
         return (
             <Card className="preview-grid preview-grid--empty">
                 <div className="preview-grid__empty-state">
-                    <div className="preview-grid__empty-icon">🖼️</div>
+                    <div className="preview-grid__empty-icon"><i className="fas fa-image"></i></div>
                     <h3>尚未生成圖片</h3>
                     <p>填寫左側表單並點擊「生成圖片」按鈕</p>
                 </div>

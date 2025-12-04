@@ -84,7 +84,8 @@ function PublishPreview({ isOpen, onClose, images, formData, onConfirm, isPublis
 function buildInitialMessage(formData) {
     // 防止 formData 為 null 或 undefined
     if (!formData) {
-        return '@everyone\n\n【活動通知】\n📅 晚上9:00-10:00\n\n💬 歡迎大家一起來討論、交流經驗，一起進步！'
+        const today = new Date().toISOString().split('T')[0]
+        return `@everyone\n\n【活動通知】\n📅 ${today} 晚上9:00-10:00\n\n💬 歡迎大家一起來討論、交流AI開發經驗，一起共同成長！`
     }
 
     const { topic = '', date = '', points = [] } = formData
@@ -92,13 +93,13 @@ function buildInitialMessage(formData) {
     let message = `@everyone\n\n【活動通知】${topic}\n📅 ${date} 晚上9:00-10:00\n`
 
     if (points && Array.isArray(points) && points.length > 0) {
-        message += `\n✨ 本次重點項目：\n`
+        message += `\n【本次重點項目】\n`
         points.forEach((point, index) => {
             message += `${index + 1}. ${point}\n`
         })
     }
 
-    message += `\n💬 歡迎大家一起來討論、交流經驗，一起進步！`
+    message += `\n💬 歡迎大家一起來討論、交流AI開發經驗，一起共同成長！`
 
     return message
 }

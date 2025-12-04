@@ -26,6 +26,7 @@ function HomePage() {
     const [progressCurrent, setProgressCurrent] = useState(0)
     const [progressTotal, setProgressTotal] = useState(4)
     const [progressStatus, setProgressStatus] = useState('')
+    const [progressMessage, setProgressMessage] = useState('') // 進度條上方訊息
     
     const previewGridRef = useRef(null)
     const inputFormRef = useRef(null)
@@ -40,16 +41,15 @@ function HomePage() {
         setProgressCurrent(0)
         setProgressTotal(4)
         setProgressStatus('準備開始生成...')
-
-        const toastId = toast.loading('正在生成圖片，請稍候...')
+        setProgressMessage('正在生成圖片，請稍候...')
 
         try {
             let referenceImageBase64 = null
 
-            // 1. 處理參考圖片（如果有）
+            // 1. 處理參考圖片（如果有用戶上傳的參考圖片）
             if (formData.referenceImage) {
                 setProgressStatus('正在處理參考圖片...')
-                toast.loading('正在處理參考圖片...', { id: toastId })
+                setProgressMessage('正在處理參考圖片...')
                 console.log('正在處理參考圖片...')
                 
                 // 直接在瀏覽器中讀取檔案並轉換為 base64
@@ -68,18 +68,47 @@ function HomePage() {
                 })
                 console.log('✅ 參考圖片處理成功')
             }
+            
+            // 1.5. 加入 Skill Hub logo 作為額外的參考圖片
+            let logoImageBase64 = null
+            try {
+                // 使用絕對路徑，開發和生產環境都能正常工作
+                const logoUrl = '/skill_hub_icon.svg'
+                console.log('正在載入 Skill Hub logo:', logoUrl)
+                
+                const logoResponse = await fetch(logoUrl)
+                if (logoResponse.ok) {
+                    const logoBlob = await logoResponse.blob()
+                    logoImageBase64 = await new Promise((resolve, reject) => {
+                        const reader = new FileReader()
+                        reader.onload = (e) => {
+                            const base64 = e.target.result.split(',')[1]
+                            resolve({
+                                data: base64,
+                                mimeType: 'image/svg+xml'
+                            })
+                        }
+                        reader.onerror = reject
+                        reader.readAsDataURL(logoBlob)
+                    })
+                    console.log('✅ Skill Hub logo 載入成功')
+                }
+            } catch (error) {
+                console.warn('無法載入 Skill Hub logo，將繼續生成:', error)
+            }
 
             // 2. 構建 Prompt
             setProgressStatus('正在構建生成提示詞...')
+            setProgressMessage('正在構建生成提示詞...')
             const prompt = buildPrompt(formData)
             console.log('構建的 Prompt：', prompt)
 
             // 3. 呼叫圖片生成 API (附帶進度回調)
             setProgressStatus('正在生成圖片...')
-            toast.loading('正在生成圖片，請稍候（可能需要 30-60 秒）...', { id: toastId })
+            setProgressMessage('正在生成圖片，請稍候（可能需要 30-60 秒）...')
             console.log('正在生成圖片...')
             
-            const images = await generateImages(prompt, referenceImageBase64, (current, total, status) => {
+            const images = await generateImages(prompt, referenceImageBase64, logoImageBase64, (current, total, status) => {
                 setProgressCurrent(current)
                 setProgressTotal(total)
                 setProgressStatus(status)
@@ -88,7 +117,7 @@ function HomePage() {
 
             // 4. 壓縮圖片
             setProgressStatus('正在壓縮圖片...')
-            toast.loading('正在壓縮圖片...', { id: toastId })
+            setProgressMessage('正在壓縮圖片...')
             console.log('開始壓縮圖片...')
             const compressedImages = await compressImages(images, {
                 maxSizeMB: 0.8,
@@ -97,12 +126,14 @@ function HomePage() {
             console.log('圖片壓縮完成')
 
             setGeneratedImages(compressedImages)
-            toast.success('圖片生成成功！', { id: toastId })
+            setProgressMessage('✅ 圖片生成成功！')
             setProgressStatus('✅ 生成完成！')
+            toast.success('圖片生成成功！')
 
             // 5. 自動保存到歷史記錄
             try {
                 setProgressStatus('正在保存歷史記錄...')
+                setProgressMessage('正在保存歷史記錄...')
                 // 生成小縮圖
                 const thumbnail = await generateThumbnail(compressedImages[0])
                 
@@ -117,13 +148,15 @@ function HomePage() {
                 })
                 console.log('✅ 已保存到歷史記錄')
                 setProgressStatus('✅ 已保存到歷史記錄')
+                setProgressMessage('✅ 已保存到歷史記錄')
             } catch (error) {
                 console.warn('保存歷史記錄失敗:', error)
                 // 不顯示錯誤,避免打擾使用者
             }
         } catch (error) {
             console.error('生成流程失敗：', error)
-            toast.error(`生成失敗: ${error.message}`, { id: toastId })
+            setProgressMessage(`❌ 生成失敗: ${error.message}`)
+            toast.error(`生成失敗: ${error.message}`)
         } finally {
             setIsGenerating(false)
         }
@@ -199,7 +232,7 @@ function HomePage() {
                 title="查看生成歷史"
                 disabled={isGenerating || isPublishing}
             >
-                📜 歷史記錄
+                <i className="fas fa-history"></i> 歷史記錄
             </button>
 
             <div className="home-page__container">
@@ -214,12 +247,19 @@ function HomePage() {
 
                 <div className="home-page__preview-section">
                     {isGenerating && (
-                        <ProgressBar
-                            current={progressCurrent}
-                            total={progressTotal}
-                            label="圖片生成進度"
-                            status={progressStatus}
-                        />
+                        <div className="home-page__progress-container">
+                            {progressMessage && (
+                                <div className="home-page__progress-message">
+                                    {progressMessage}
+                                </div>
+                            )}
+                            <ProgressBar
+                                current={progressCurrent}
+                                total={progressTotal}
+                                label="圖片生成進度"
+                                status={progressStatus}
+                            />
+                        </div>
                     )}
                     
                     <PreviewGrid

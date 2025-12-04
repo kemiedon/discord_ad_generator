@@ -18,6 +18,45 @@ const dataUrlToBlob = (dataUrl) => {
 }
 
 /**
+ * 根據主題生成吸引人的描述
+ * @param {string} topic - 活動主題
+ * @returns {string} - 2行描述文字
+ */
+const generateAttractionDescription = (topic) => {
+  // 根據主題關鍵字生成相應的描述
+  const topicLower = topic.toLowerCase()
+  
+  // AI相關主題
+  if (topicLower.includes('ai') || topicLower.includes('人工智慧') || topicLower.includes('機器學習') || topicLower.includes('gemini') || topicLower.includes('chatgpt')) {
+    return `這週的直播，要跟大家深入探討 AI 技術的應用與趨勢。\n有興趣的同學別忘了一起來討論喔！`
+  } 
+  // 設計相關主題
+  else if (topicLower.includes('設計') || topicLower.includes('ui') || topicLower.includes('ux') || topicLower.includes('視覺') || topicLower.includes('品牌')) {
+    return `這週的直播，我要分享如何提升設計思維與實戰技巧。\n有空的同學歡迎來聊聊！`
+  } 
+  // 職涯/履歷相關
+  else if (topicLower.includes('履歷') || topicLower.includes('職涯') || topicLower.includes('求職') || topicLower.includes('面試') || topicLower.includes('作品集')) {
+    return `這週我們來聊聊職涯規劃與個人定位的實戰經驗分享。\n一樣開放大家提問喔，有空的同學歡迎來聽聽！`
+  }
+  // 創意思考
+  else if (topicLower.includes('創意') || topicLower.includes('思考') || topicLower.includes('發想')) {
+    return `這禮拜的直播，要跟大家分享創意思考這一塊。\n有興趣的同學別忘了這週日一起來討論喔！`
+  }
+  // 程式開發
+  else if (topicLower.includes('python') || topicLower.includes('程式') || topicLower.includes('coding') || topicLower.includes('開發')) {
+    return `這週直播要跟大家分享程式開發的實用技巧與心得。\n歡迎有興趣的同學一起來交流！`
+  } 
+  // Web/網站
+  else if (topicLower.includes('web') || topicLower.includes('網站') || topicLower.includes('前端') || topicLower.includes('後端')) {
+    return `這週要來聊聊 Web 開發的最新趨勢與實戰經驗。\n有空的同學歡迎來一起討論！`
+  } 
+  // 通用描述（保持親切、邀請的語氣）
+  else {
+    return `這週的直播要跟大家分享一些實用的經驗與技巧。\n有興趣的同學歡迎一起來交流討論喔！`
+  }
+}
+
+/**
  * 構建 Discord 訊息內容
  * @param {Object} formData - 表單資料
  * @returns {string} - 格式化的訊息內容
@@ -25,7 +64,8 @@ const dataUrlToBlob = (dataUrl) => {
 const buildDiscordMessage = (formData) => {
   // 防止 formData 為 null 或 undefined
   if (!formData) {
-    return '@everyone\n\n【活動通知】\n📅 晚上9:00-10:00\n\n💬 歡迎大家一起來討論、交流AI開發經驗，一起共同成長！'
+    const today = new Date().toISOString().split('T')[0]
+    return `@everyone\n\n【活動通知】\n📅 ${today} 晚上9:00-10:00\n\n💬 歡迎大家一起來討論、交流AI開發經驗，一起共同成長！`
   }
 
   const { topic = '', date = '', points = [] } = formData
@@ -39,6 +79,10 @@ const buildDiscordMessage = (formData) => {
       message += `${index + 1}. ${point}\n`
     })
   }
+
+  // 加入根據主題生成的吸引人描述
+  const attractionDesc = generateAttractionDescription(topic)
+  message += `\n${attractionDesc}\n`
 
   message += `\n💬 歡迎大家一起來討論、交流AI開發經驗，一起共同成長！`
 

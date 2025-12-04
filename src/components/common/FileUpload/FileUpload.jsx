@@ -111,7 +111,7 @@ function FileUpload({
                         id="file-input"
                     />
                     <label htmlFor="file-input" className="file-upload__label">
-                        <div className="file-upload__icon">📁</div>
+                        <div className="file-upload__icon"><i className="fas fa-folder-open"></i></div>
                         <p className="file-upload__text">
                             拖放圖片到這裡，或點擊選擇檔案
                         </p>

@@ -8,42 +8,102 @@
 }
 
 .app-header {
-  background: linear-gradient(135deg, $discord-purple 0%, $discord-purple-dark 100%);
-  padding: $spacing-xl 0;
+  background: transparent;
+  padding: $spacing-lg 0;
   text-align: center;
-  box-shadow: $shadow-lg;
+  position: relative;
   
-  h1 {
-    margin-bottom: $spacing-sm;
-    color: $text-primary;
-    font-size: $font-size-3xl;
-    
+  &__content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 $spacing-md;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: $spacing-md;
+
     @include mobile {
-      font-size: $font-size-2xl;
+      flex-direction: column;
+      justify-content: center;
     }
   }
-  
-  .subtitle {
-    color: $text-secondary;
-    font-size: $font-size-lg;
-    
+
+  &__brand {
+    display: flex;
+    align-items: center;
+    gap: $spacing-lg;
+    text-align: left;
+
     @include mobile {
-      font-size: $font-size-base;
-      padding: 0 $spacing-md;
+      flex-direction: column;
+      text-align: center;
+      gap: $spacing-sm;
     }
+  }
+
+  .app-logo {
+    width: 80px;
+    height: 80px;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 0;
+    border: 3px solid #f8b700;
+    box-shadow: 0 0 0 3px #313638, 0 0 0 6px #f8b700;
+    transition: all 0.3s ease;
+
+    &:hover {
+      transform: scale(1.1);
+    }
+  }
+
+  &__text {
+    h1 {
+      margin-bottom: $spacing-xs;
+      color: #f8b700;
+      font-size: $font-size-2xl;
+      line-height: 1.2;
+      font-family: 'Noto Sans TC', sans-serif;
+      font-weight: 700;
+      text-shadow: 3px 3px 0 #ff004d;
+      
+      @include mobile {
+        font-size: $font-size-xl;
+      }
+    }
+  
+    .subtitle {
+      color: #29adff;
+      opacity: 1;
+      font-size: $font-size-sm;
+      font-family: 'Noto Sans TC', sans-serif;
+      
+      @include mobile {
+        font-size: $font-size-xs;
+      }
+    }
+  }
+}
+
+@keyframes rotateBorder {
+  0% {
+    filter: hue-rotate(0deg);
+  }
+  100% {
+    filter: hue-rotate(360deg);
   }
 }
 
 .app-main {
   flex: 1;
-  background: $bg-darker;
+  background: transparent;
+  padding: $spacing-lg 0;
 }
 
 .app-footer {
-  background: $bg-dark;
   padding: $spacing-lg 0;
   text-align: center;
-  color: $text-muted;
+  color: #29adff;
   font-size: $font-size-sm;
-  border-top: 1px solid $bg-light;
+  border-top: 3px solid #f8b700;
+  background: rgba(26, 26, 46, 0.5);
 }

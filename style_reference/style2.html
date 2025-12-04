@@ -1,0 +1,601 @@
+<html>
+<head>
+    <title>8-bit Input Form</title>
+    <style>
+        @font-face {
+            font-family: 'VT323';
+            font-style: normal;
+            font-weight: 400;
+            src: url('https://fonts.gstatic.com/s/vt323/v17/pxiKyp0ihIEF2isfFJXUdVNF.woff2') format('woff2');
+            unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'VT323', monospace;
+            background-color: #222034;
+            color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+            letter-spacing: 1px;
+            background-image: 
+                radial-gradient(#445 1px, transparent 1px),
+                radial-gradient(#445 1px, transparent 1px);
+            background-size: 20px 20px;
+            background-position: 0 0, 10px 10px;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 600px;
+            background-color: #313638;
+            border: 4px solid #f8b700;
+            box-shadow: 0 0 0 4px #313638, 0 0 0 8px #f8b700;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .title {
+            font-size: 36px;
+            text-align: center;
+            margin-bottom: 30px;
+            color: #f8b700;
+            text-shadow: 3px 3px 0 #ff004d;
+            animation: pulse 2s infinite;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+        
+        .form-group label {
+            display: block;
+            font-size: 20px;
+            margin-bottom: 8px;
+            color: #29adff;
+        }
+        
+        .input-box {
+            width: 100%;
+            padding: 10px;
+            background-color: #222034;
+            border: 3px solid #29adff;
+            color: #f4f4f4;
+            font-family: 'VT323', monospace;
+            font-size: 20px;
+            transition: all 0.3s;
+            outline: none;
+        }
+        
+        .input-box:focus {
+            border-color: #f8b700;
+            box-shadow: 0 0 8px #f8b700;
+        }
+        
+        .error-message {
+            color: #ff004d;
+            font-size: 16px;
+            margin-top: 5px;
+            height: 20px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .input-error {
+            border-color: #ff004d;
+            animation: shake 0.5s;
+        }
+        
+        button {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            background-color: #29adff;
+            border: none;
+            color: #222034;
+            font-family: 'VT323', monospace;
+            font-size: 22px;
+            cursor: pointer;
+            margin-top: 10px;
+            position: relative;
+            overflow: hidden;
+            transition: background-color 0.3s;
+            border: 3px solid #29adff;
+        }
+        
+        button:hover {
+            background-color: #f8b700;
+            border-color: #f8b700;
+        }
+        
+        button:active {
+            transform: scale(0.98);
+        }
+        
+        .pixel-corner {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #f8b700;
+        }
+        
+        .pixel-corner-tl {
+            top: 0;
+            left: 0;
+        }
+        
+        .pixel-corner-tr {
+            top: 0;
+            right: 0;
+        }
+        
+        .pixel-corner-bl {
+            bottom: 0;
+            left: 0;
+        }
+        
+        .pixel-corner-br {
+            bottom: 0;
+            right: 0;
+        }
+        
+        .success-message {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(34, 32, 52, 0.9);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.5s;
+            z-index: 100;
+            padding: 20px;
+        }
+        
+        .success-message.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .success-icon {
+            width: 80px;
+            height: 80px;
+            background-color: #00e436;
+            margin-bottom: 20px;
+            position: relative;
+            animation: successPulse 1s infinite;
+        }
+        
+        .success-icon:before, .success-icon:after {
+            content: '';
+            position: absolute;
+            background-color: #00e436;
+        }
+        
+        .success-icon:before {
+            width: 30px;
+            height: 15px;
+            transform: rotate(45deg);
+            bottom: 25px;
+            left: 15px;
+        }
+        
+        .success-icon:after {
+            width: 60px;
+            height: 15px;
+            transform: rotate(-45deg);
+            bottom: 30px;
+            right: 5px;
+        }
+        
+        .success-title {
+            font-size: 32px;
+            color: #00e436;
+            margin-bottom: 15px;
+            text-align: center;
+            text-shadow: 2px 2px 0 #222034;
+        }
+        
+        .success-text {
+            font-size: 22px;
+            color: #f4f4f4;
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        
+        .restart-btn {
+            background-color: #00e436;
+            border-color: #00e436;
+            max-width: 200px;
+        }
+        
+        .restart-btn:hover {
+            background-color: #29adff;
+            border-color: #29adff;
+        }
+        
+        .loader {
+            display: none;
+            width: 50px;
+            height: 20px;
+            margin: 10px auto;
+            text-align: center;
+        }
+        
+        .loader .dot {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            margin: 0 5px;
+            background-color: #f8b700;
+            animation: dotPulse 1s infinite;
+        }
+        
+        .loader .dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+        
+        .loader .dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+        
+        .pixel-decor {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #ff004d;
+            opacity: 0.7;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-5px); }
+            40%, 80% { transform: translateX(5px); }
+        }
+        
+        @keyframes successPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        @keyframes dotPulse {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .pixel-cursor {
+            display: inline-block;
+            width: 10px;
+            height: 20px;
+            background-color: #f8b700;
+            animation: blink 1s infinite;
+            vertical-align: middle;
+            margin-left: 5px;
+        }
+        
+        @keyframes blink {
+            0%, 49% { opacity: 1; }
+            50%, 100% { opacity: 0; }
+        }
+        
+        .input-wrapper {
+            position: relative;
+        }
+        
+        .input-box:focus + .focus-effect {
+            opacity: 1;
+        }
+        
+        .focus-effect {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            border: 3px solid #f8b700;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 700px) {
+            .container {
+                width: 90%;
+                padding: 15px;
+            }
+            
+            .title {
+                font-size: 28px;
+                margin-bottom: 20px;
+            }
+            
+            .form-group label {
+                font-size: 18px;
+            }
+            
+            .input-box {
+                font-size: 18px;
+                padding: 8px;
+            }
+            
+            button {
+                font-size: 20px;
+                padding: 10px;
+            }
+            
+            .success-icon {
+                width: 60px;
+                height: 60px;
+            }
+            
+            .success-title {
+                font-size: 26px;
+            }
+            
+            .success-text {
+                font-size: 18px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="pixel-corner pixel-corner-tl"></div>
+        <div class="pixel-corner pixel-corner-tr"></div>
+        <div class="pixel-corner pixel-corner-bl"></div>
+        <div class="pixel-corner pixel-corner-br"></div>
+        
+        <h1 class="title">SPACE QUEST REGISTRATION<span class="pixel-cursor"></span></h1>
+        
+        <form id="pixelForm">
+            <div class="form-group">
+                <label for="username">PILOT NAME:</label>
+                <div class="input-wrapper">
+                    <input type="text" id="username" class="input-box" autocomplete="off">
+                    <div class="focus-effect"></div>
+                </div>
+                <div class="error-message" id="username-error"></div>
+            </div>
+            
+            <div class="form-group">
+                <label for="email">COMMUNICATION CHANNEL:</label>
+                <div class="input-wrapper">
+                    <input type="email" id="email" class="input-box" autocomplete="off">
+                    <div class="focus-effect"></div>
+                </div>
+                <div class="error-message" id="email-error"></div>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">SECRET CODE:</label>
+                <div class="input-wrapper">
+                    <input type="password" id="password" class="input-box" autocomplete="off">
+                    <div class="focus-effect"></div>
+                </div>
+                <div class="error-message" id="password-error"></div>
+            </div>
+            
+            <div class="form-group">
+                <label for="starship">STARSHIP MODEL:</label>
+                <div class="input-wrapper">
+                    <select id="starship" class="input-box">
+                        <option value="">SELECT YOUR VESSEL</option>
+                        <option value="pixelracer">PIXEL RACER X9</option>
+                        <option value="bitcruiser">BIT CRUISER 64</option>
+                        <option value="byteblaster">BYTE BLASTER 2000</option>
+                        <option value="retrowarp">RETRO WARP SHUTTLE</option>
+                    </select>
+                    <div class="focus-effect"></div>
+                </div>
+                <div class="error-message" id="starship-error"></div>
+            </div>
+            
+            <button type="submit" id="submitBtn">INITIALIZE MISSION</button>
+            
+            <div class="loader" id="loader">
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+            </div>
+        </form>
+        
+        <div class="success-message" id="successMessage">
+            <div class="success-icon"></div>
+            <h2 class="success-title">MISSION INITIALIZED!</h2>
+            <p class="success-text">Welcome aboard, pilot! Your galactic adventure awaits. Prepare for pixel-perfect exploration across the digital cosmos.</p>
+            <button class="restart-btn" id="restartBtn">NEW MISSION</button>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Create random pixel decorations
+            const container = document.querySelector('.container');
+            
+            for (let i = 0; i < 15; i++) {
+                const pixel = document.createElement('div');
+                pixel.classList.add('pixel-decor');
+                pixel.style.left = Math.random() * 100 + '%';
+                pixel.style.top = Math.random() * 100 + '%';
+                pixel.style.backgroundColor = ['#29adff', '#ff004d', '#f8b700', '#00e436'][Math.floor(Math.random() * 4)];
+                container.appendChild(pixel);
+            }
+            
+            const form = document.getElementById('pixelForm');
+            const usernameInput = document.getElementById('username');
+            const emailInput = document.getElementById('email');
+            const passwordInput = document.getElementById('password');
+            const starshipInput = document.getElementById('starship');
+            const submitBtn = document.getElementById('submitBtn');
+            const loader = document.getElementById('loader');
+            const successMessage = document.getElementById('successMessage');
+            const restartBtn = document.getElementById('restartBtn');
+            
+            const usernameError = document.getElementById('username-error');
+            const emailError = document.getElementById('email-error');
+            const passwordError = document.getElementById('password-error');
+            const starshipError = document.getElementById('starship-error');
+            
+            // Play 8-bit sound effect
+            function playSound(type) {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                if (type === 'error') {
+                    oscillator.type = 'square';
+                    oscillator.frequency.setValueAtTime(196, audioContext.currentTime);
+                    oscillator.frequency.setValueAtTime(130.81, audioContext.currentTime + 0.1);
+                    gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
+                    oscillator.start();
+                    oscillator.stop(audioContext.currentTime + 0.2);
+                } else if (type === 'success') {
+                    oscillator.type = 'square';
+                    oscillator.frequency.setValueAtTime(523.25, audioContext.currentTime);
+                    oscillator.frequency.setValueAtTime(659.25, audioContext.currentTime + 0.1);
+                    oscillator.frequency.setValueAtTime(783.99, audioContext.currentTime + 0.2);
+                    gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
+                    oscillator.start();
+                    oscillator.stop(audioContext.currentTime + 0.3);
+                } else if (type === 'click') {
+                    oscillator.type = 'square';
+                    oscillator.frequency.setValueAtTime(659.25, audioContext.currentTime);
+                    gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+                    oscillator.start();
+                    oscillator.stop(audioContext.currentTime + 0.1);
+                }
+            }
+            
+            // Show error with retro animation
+            function showError(element, errorElement, message) {
+                element.classList.add('input-error');
+                errorElement.textContent = message;
+                errorElement.style.opacity = '1';
+                
+                playSound('error');
+                
+                setTimeout(() => {
+                    element.classList.remove('input-error');
+                }, 500);
+            }
+            
+            // Reset error
+            function resetError(errorElement) {
+                errorElement.style.opacity = '0';
+            }
+            
+            // Validate the form
+            function validateForm() {
+                let isValid = true;
+                
+                // Reset errors
+                resetError(usernameError);
+                resetError(emailError);
+                resetError(passwordError);
+                resetError(starshipError);
+                
+                // Validate username
+                if (usernameInput.value.trim() === '') {
+                    showError(usernameInput, usernameError, 'PILOT NAME REQUIRED!');
+                    isValid = false;
+                } else if (usernameInput.value.length < 3) {
+                    showError(usernameInput, usernameError, 'NAME TOO SHORT!');
+                    isValid = false;
+                }
+                
+                // Validate email
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (emailInput.value.trim() === '') {
+                    showError(emailInput, emailError, 'COMM CHANNEL REQUIRED!');
+                    isValid = false;
+                } else if (!emailRegex.test(emailInput.value)) {
+                    showError(emailInput, emailError, 'INVALID CHANNEL FORMAT!');
+                    isValid = false;
+                }
+                
+                // Validate password
+                if (passwordInput.value.trim() === '') {
+                    showError(passwordInput, passwordError, 'SECRET CODE REQUIRED!');
+                    isValid = false;
+                } else if (passwordInput.value.length < 6) {
+                    showError(passwordInput, passwordError, 'CODE TOO WEAK!');
+                    isValid = false;
+                }
+                
+                // Validate starship
+                if (starshipInput.value === '') {
+                    showError(starshipInput, starshipError, 'SELECT YOUR VESSEL!');
+                    isValid = false;
+                }
+                
+                return isValid;
+            }
+            
+            // Form submission
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                playSound('click');
+                
+                if (validateForm()) {
+                    // Show loader
+                    submitBtn.style.display = 'none';
+                    loader.style.display = 'block';
+                    
+                    // Simulate form submission
+                    setTimeout(() => {
+                        loader.style.display = 'none';
+                        successMessage.classList.add('show');
+                        playSound('success');
+                    }, 1500);
+                }
+            });
+            
+            // Restart button
+            restartBtn.addEventListener('click', function() {
+                playSound('click');
+                successMessage.classList.remove('show');
+                form.reset();
+                submitBtn.style.display = 'block';
+            });
+            
+            // Input effects
+            const inputs = document.querySelectorAll('.input-box');
+            
+            inputs.forEach(input => {
+                input.addEventListener('focus', function() {
+                    playSound('click');
+                });
+            });
+        });
+    </script>
+</body>
+</html>

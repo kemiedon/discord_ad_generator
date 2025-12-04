@@ -4,6 +4,8 @@
 .btn {
   @include button-base;
   font-size: $font-size-base;
+  font-family: 'Noto Sans TC', sans-serif;
+  font-weight: 500;
   gap: $spacing-sm;
   
   &:focus {
@@ -13,48 +15,65 @@
   
   // 變體樣式
   &--primary {
-    background: linear-gradient(135deg, $discord-purple 0%, $discord-purple-dark 100%);
-    color: $text-primary;
+    background: linear-gradient(135deg, #f8b700 0%, #ff6b6b 100%);
+    color: #ffffff;
+    font-weight: bold;
+    border: 3px solid #ff6b6b;
+    border-radius: 0;
+    position: relative;
+    box-shadow: 0 4px 0 rgba(0, 0, 0, 0.3);
     
     &:hover:not(:disabled) {
-      background: linear-gradient(135deg, $discord-purple-light 0%, $discord-purple 100%);
+      background: linear-gradient(135deg, #ff6b6b 0%, #f8b700 100%);
+      border-color: #f8b700;
       transform: translateY(-2px);
-      box-shadow: $shadow-lg;
+      box-shadow: 0 6px 0 rgba(0, 0, 0, 0.3);
     }
     
     &:active:not(:disabled) {
-      transform: translateY(0);
+      transform: translateY(2px);
+      box-shadow: 0 2px 0 rgba(0, 0, 0, 0.3);
     }
   }
   
   &--secondary {
-    background: $bg-light;
-    color: $text-primary;
-    border: 1px solid $text-muted;
+    background: rgba(49, 54, 56, 0.6);
+    color: #ffffff;
+    border: 3px solid #29adff;
+    border-radius: 0;
     
     &:hover:not(:disabled) {
-      background: $bg-dark;
-      border-color: $discord-purple-light;
+      background: rgba(41, 173, 255, 0.1);
+      border-color: #f8b700;
+      color: #ffffff;
     }
   }
   
   &--success {
-    background: $success;
-    color: $text-primary;
-    transition: filter $transition-fast;
+    background: #4ecdc4;
+    color: #ffffff;
+    font-weight: bold;
+    border: 3px solid #45b8b0;
+    border-radius: 0;
     
     &:hover:not(:disabled) {
-      filter: brightness(0.85);
+      background: #3db3ab;
+      border-color: #29adff;
+      transform: translateY(-2px);
     }
   }
   
   &--danger {
-    background: $error;
-    color: $text-primary;
-    transition: filter $transition-fast;
+    background: #ff004d;
+    color: #ffffff;
+    font-weight: bold;
+    border: 3px solid #cc003d;
+    border-radius: 0;
     
     &:hover:not(:disabled) {
-      filter: brightness(0.85);
+      background: #cc003d;
+      border-color: #ff6b6b;
+      transform: translateY(-2px);
     }
   }
   
@@ -77,19 +96,11 @@
   // Loading 狀態
   &--loading {
     position: relative;
-    color: transparent;
+    pointer-events: none;
+    opacity: 0.7;
   }
   
   &__spinner {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    width: 16px;
-    height: 16px;
-    border: 2px solid rgba(255, 255, 255, 0.3);
-    border-top-color: $text-primary;
-    border-radius: 50%;
-    animation: spin 0.6s linear infinite;
+    display: none;
   }
 }

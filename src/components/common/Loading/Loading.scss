@@ -6,33 +6,40 @@
   flex-direction: column;
   gap: $spacing-md;
   padding: $spacing-2xl;
+  background: rgba(49, 54, 56, 0.5);
+  border: 3px solid #313638;
+  border-radius: 0;
   
   &__spinner {
-    border-radius: 50%;
-    border: 3px solid rgba($discord-purple, 0.2);
-    border-top-color: $discord-purple;
+    border-radius: 0;
+    border: 3px solid rgba(41, 173, 255, 0.3);
+    border-top-color: #29adff;
+    border-right-color: #29adff;
     animation: spin 0.8s linear infinite;
     
     &--small {
       width: 24px;
       height: 24px;
-      border-width: 2px;
+      border-width: 3px;
     }
     
     &--medium {
       width: 40px;
       height: 40px;
+      border-width: 3px;
     }
     
     &--large {
       width: 60px;
       height: 60px;
-      border-width: 4px;
+      border-width: 3px;
     }
   }
   
   &__text {
-    color: $text-secondary;
-    font-size: $font-size-sm;
+    color: #f8b700;
+    font-size: $font-size-base;
+    font-family: 'Noto Sans TC', sans-serif;
+    font-weight: bold;
   }
 }

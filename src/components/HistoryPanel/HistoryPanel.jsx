@@ -116,7 +116,7 @@ function HistoryPanel({ isOpen, onClose, onLoadHistory }) {
                             onClick={loadHistory}
                             disabled={isLoading}
                         >
-                            🔄 重新載入
+                            <i className="fas fa-sync-alt"></i> 重新載入
                         </Button>
                         <Button
                             variant="danger"
@@ -124,14 +124,14 @@ function HistoryPanel({ isOpen, onClose, onLoadHistory }) {
                             onClick={handleClearAll}
                             disabled={isLoading || history.length === 0}
                         >
-                            🗑️ 清空全部
+                            <i className="fas fa-trash-alt"></i> 清空全部
                         </Button>
                         <button
                             className="history-panel__close-btn"
                             onClick={onClose}
                             aria-label="關閉"
                         >
-                            ✕
+                            <i className="fas fa-times"></i>
                         </button>
                     </div>
                 </div>
@@ -143,7 +143,7 @@ function HistoryPanel({ isOpen, onClose, onLoadHistory }) {
                 </div>
             ) : history.length === 0 ? (
                 <div className="history-panel__empty">
-                    <div className="icon">📋</div>
+                    <div className="icon"><i className="fas fa-clipboard"></i></div>
                     <p>尚無歷史記錄</p>
                 </div>
             ) : (
@@ -158,7 +158,7 @@ function HistoryPanel({ isOpen, onClose, onLoadHistory }) {
                                 {record.thumbnail ? (
                                     <img src={record.thumbnail} alt={record.topic} />
                                 ) : (
-                                    <div className="history-item__no-image">🖼️</div>
+                                    <div className="history-item__no-image"><i className="fas fa-image"></i></div>
                                 )}
                             </div>
 
@@ -184,21 +184,11 @@ function HistoryPanel({ isOpen, onClose, onLoadHistory }) {
 
                             <div className="history-item__actions">
                                 <button
-                                    className="history-item__button history-item__button--load"
-                                    title="載入此記錄"
-                                    onClick={(e) => {
-                                        e.stopPropagation()
-                                        handleLoad(record)
-                                    }}
-                                >
-                                    ↻
-                                </button>
-                                <button
                                     className="history-item__button history-item__button--delete"
                                     title="刪除此記錄"
                                     onClick={(e) => handleDelete(record.id, e)}
                                 >
-                                    🗑️
+                                    <i className="fas fa-trash"></i>
                                 </button>
                             </div>
                         </div>

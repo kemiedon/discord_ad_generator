@@ -7,6 +7,32 @@
   border: 1px solid $border-color;
   border-radius: 8px;
   margin-bottom: 1rem;
+  font-family: 'Noto Sans TC', sans-serif;
+  
+  // Minecraft 主題
+  [data-theme="minecraft"] & {
+    background: #2a2a2a;
+    border: 4px solid #000;
+    border-radius: 0;
+    box-shadow: inset -2px -2px 0 rgba(0,0,0,0.5), inset 2px 2px 0 rgba(255,255,255,0.1);
+  }
+  
+  // Gameboy 主題
+  [data-theme="gameboy"] & {
+    background: #8BAC0F;
+    border: 3px solid #0F380F;
+    border-radius: 0;
+    box-shadow: 3px 3px 0 #0F380F;
+    font-family: 'VT323', monospace;
+  }
+  
+  // Mario 主題
+  [data-theme="mario"] & {
+    background: #fff;
+    border: 4px solid #000;
+    border-radius: 16px;
+    box-shadow: 0 6px 0 rgba(0,0,0,0.2);
+  }
 
   &__header {
     display: flex;
@@ -34,11 +60,32 @@
     border-radius: 12px;
     overflow: hidden;
     position: relative;
+    
+    // Minecraft 主題
+    [data-theme="minecraft"] & {
+      background: #1a1a1a;
+      border-radius: 0;
+      border: 2px solid #000;
+    }
+    
+    // Gameboy 主題
+    [data-theme="gameboy"] & {
+      background: #306230;
+      border-radius: 0;
+      border: 2px solid #0F380F;
+    }
+    
+    // Mario 主題
+    [data-theme="mario"] & {
+      background: #FFF5E1;
+      border-radius: 20px;
+      border: 2px solid #000;
+    }
   }
 
   &__fill {
     height: 100%;
-    background: linear-gradient(90deg, $discord-purple 0%, lighten($discord-purple, 10%) 100%);
+    background: linear-gradient(90deg, $discord-purple 0%, #7289DA 100%);
     border-radius: 12px;
     transition: width 0.3s ease;
     display: flex;
@@ -46,6 +93,24 @@
     justify-content: flex-end;
     padding-right: 0.5rem;
     position: relative;
+    
+    // Minecraft 主題
+    [data-theme="minecraft"] & {
+      background: linear-gradient(90deg, #5CAF3E 0%, #6BBF4E 100%);
+      border-radius: 0;
+    }
+    
+    // Gameboy 主題
+    [data-theme="gameboy"] & {
+      background: #0F380F;
+      border-radius: 0;
+    }
+    
+    // Mario 主題
+    [data-theme="mario"] & {
+      background: linear-gradient(90deg, #F83800 0%, #FF4F1F 100%);
+      border-radius: 20px;
+    }
     
     // 動態光澤效果
     &::after {

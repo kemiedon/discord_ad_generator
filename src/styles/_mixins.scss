@@ -77,10 +77,11 @@
   justify-content: center;
   padding: vars.$spacing-sm vars.$spacing-lg;
   border: none;
-  border-radius: vars.$radius-md;
+  border-radius: 0;
   font-weight: vars.$font-weight-semibold;
   cursor: pointer;
   transition: all vars.$transition-base;
+  color: #ffffff;
   
   &:disabled {
     opacity: 0.5;

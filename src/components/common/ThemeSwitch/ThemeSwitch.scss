@@ -1,0 +1,107 @@
+@use '../../../styles/variables' as *;
+
+.theme-switch {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+  background: rgba(0, 0, 0, 0.2);
+  padding: $spacing-xs $spacing-md;
+  border-radius: $radius-full;
+  backdrop-filter: blur(4px);
+  
+  // Minecraft 主題
+  [data-theme="minecraft"] & {
+    background: rgba(0, 0, 0, 0.4);
+    border: 2px solid #5CAF3E;
+    border-radius: 0;
+    box-shadow: inset 0 0 10px rgba(92,175,62,0.3);
+  }
+  
+  // Gameboy 主題
+  [data-theme="gameboy"] & {
+    background: rgba(48, 98, 48, 0.5);
+    border: 2px solid #0F380F;
+    border-radius: 0;
+    box-shadow: 2px 2px 0 #0F380F;
+  }
+  
+  // Mario 主題
+  [data-theme="mario"] & {
+    background: rgba(255, 255, 255, 0.9);
+    border: 2px solid #000;
+    border-radius: 20px;
+    box-shadow: 0 4px 0 rgba(0,0,0,0.2);
+  }
+
+  &__label {
+    font-family: 'Noto Sans TC', sans-serif;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #fff;
+    text-shadow: 1px 1px 0 #000;
+    
+    [data-theme="gameboy"] & {
+      color: #0F380F;
+      text-shadow: none;
+    }
+    
+    [data-theme="mario"] & {
+      color: #000;
+      text-shadow: none;
+    }
+  }
+
+  &__options {
+    display: flex;
+    gap: $spacing-sm;
+  }
+}
+
+.theme-btn {
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  font-size: 1.2rem;
+  padding: 0;
+  
+  // Reset default button styles override from _themes.scss
+  font-family: inherit !important;
+  
+  &:hover {
+    transform: scale(1.1);
+  }
+
+  &.active {
+    transform: scale(1.15);
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+    border: 2px solid #fff !important;
+  }
+
+  &--minecraft {
+    background: #5CAF3E !important;
+    border: 2px solid #333 !important;
+    box-shadow: inset -2px -2px 0 rgba(0,0,0,0.3) !important;
+    border-radius: 0 !important;
+  }
+
+  &--gameboy {
+    background: #9BBC0F !important;
+    border: 2px solid #0F380F !important;
+    box-shadow: 2px 2px 0 #0F380F !important;
+    border-radius: 0 !important;
+    color: #0F380F !important;
+  }
+
+  &--mario {
+    background: #F83800 !important;
+    border: 2px solid #fff !important;
+    border-radius: 50% !important;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3) !important;
+  }
+}

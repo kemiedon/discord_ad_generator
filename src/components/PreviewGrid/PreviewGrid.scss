@@ -15,6 +15,7 @@
   &__empty-state {
     text-align: center;
     color: $text-secondary;
+    font-family: 'Noto Sans TC', sans-serif;
     
     h3 {
       margin-bottom: $spacing-sm;
@@ -24,17 +25,26 @@
   &__empty-icon {
     font-size: 4rem;
     margin-bottom: $spacing-md;
+    
+    i {
+      font-size: 4rem;
+    }
   }
   
   &__header {
     @include flex-between;
     padding: $spacing-md $spacing-lg;
+    background: rgba(49, 54, 56, 0.5);
+    border: 3px solid #313638;
+    border-radius: 0;
   }
   
   &__title {
     margin: 0;
     color: $text-primary;
     font-size: $font-size-xl;
+    font-family: 'Noto Sans TC', sans-serif;
+    font-weight: 700;
   }
   
   &__actions {
@@ -44,7 +54,7 @@
   
   &__images {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    grid-template-columns: repeat(2, 1fr);
     gap: $spacing-lg;
     
     @include mobile {
@@ -58,15 +68,18 @@
     overflow: hidden;
     cursor: pointer;
     transition: all $transition-base;
+    border: 3px solid #313638;
+    border-radius: 0;
+    background: rgba(49, 54, 56, 0.3);
     
     &--selected {
-      border: 3px solid $discord-purple;
-      box-shadow: 0 0 20px rgba($discord-purple, 0.5);
+      border: 3px solid #f8b700;
+      box-shadow: 0 0 0 3px #f8b700;
     }
     
     &:hover {
-      transform: translateY(-4px);
-      box-shadow: $shadow-xl;
+      border-color: #29adff;
+      transform: translateY(-2px);
     }
   }
   

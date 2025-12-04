@@ -1,0 +1,209 @@
+@use './styles/variables' as *;
+@use './styles/mixins' as *;
+@use './styles/themes' as *;
+
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-header {
+  background: rgba(26, 26, 46, 0.8);
+  padding: $spacing-lg 0;
+  text-align: center;
+  border-bottom: 3px solid #00ffff;
+  box-shadow: 
+    0 0 20px rgba(0, 255, 255, 0.3),
+    0 4px 0 rgba(255, 0, 255, 0.2);
+  backdrop-filter: blur(10px);
+  position: relative;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, 
+      transparent,
+      #ff00ff 20%,
+      #00ffff 50%,
+      #ff00ff 80%,
+      transparent
+    );
+    animation: scanline 3s linear infinite;
+  }
+  
+  &__content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 $spacing-md;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: $spacing-md;
+
+    @include mobile {
+      flex-direction: column;
+      justify-content: center;
+    }
+  }
+
+  &__brand {
+    display: flex;
+    align-items: center;
+    gap: $spacing-lg;
+    text-align: left;
+
+    @include mobile {
+      flex-direction: column;
+      text-align: center;
+      gap: $spacing-sm;
+    }
+  }
+
+  .app-logo {
+    width: 80px;
+    height: 80px;
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 8px;
+    border: 3px solid #00ffff;
+    box-shadow: 
+      0 0 20px rgba(0, 255, 255, 0.6),
+      0 0 40px rgba(255, 0, 255, 0.4),
+      inset 0 0 10px rgba(255, 255, 255, 0.3);
+    filter: none;
+    transition: all 0.3s ease;
+    position: relative;
+
+    &:hover {
+      transform: scale(1.1) rotate(-5deg);
+      box-shadow: 
+        0 0 30px rgba(0, 255, 255, 0.8),
+        0 0 60px rgba(255, 0, 255, 0.6),
+        inset 0 0 15px rgba(255, 255, 255, 0.5);
+      border-color: #ff00ff;
+    }
+    
+    &::before {
+      content: '';
+      position: absolute;
+      top: -3px;
+      left: -3px;
+      right: -3px;
+      bottom: -3px;
+      background: linear-gradient(45deg, #00ffff, #ff00ff, #00ffff);
+      border-radius: 8px;
+      z-index: -1;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    
+    &:hover::before {
+      opacity: 1;
+      animation: rotateBorder 2s linear infinite;
+    }
+  }
+
+  &__text {
+    h1 {
+      margin-bottom: $spacing-xs;
+      color: #00ffff;
+      font-size: $font-size-2xl;
+      line-height: 1.2;
+      font-family: 'Noto Sans TC', sans-serif;
+      font-weight: 700;
+      text-shadow: 
+        0 0 10px rgba(0, 255, 255, 0.8),
+        0 0 20px rgba(0, 255, 255, 0.5),
+        3px 3px 0 rgba(255, 0, 255, 0.6);
+      animation: glowPulse 2s ease-in-out infinite;
+      
+      @include mobile {
+        font-size: $font-size-xl;
+      }
+    }
+  
+    .subtitle {
+      color: #ff00ff;
+      opacity: 1;
+      font-size: $font-size-sm;
+      font-family: 'Noto Sans TC', sans-serif;
+      text-shadow: 0 0 8px rgba(255, 0, 255, 0.6);
+      
+      @include mobile {
+        font-size: $font-size-xs;
+      }
+    }
+  }
+}
+
+@keyframes rotateBorder {
+  0% {
+    filter: hue-rotate(0deg);
+  }
+  100% {
+    filter: hue-rotate(360deg);
+  }
+}
+
+@keyframes glowPulse {
+  0%, 100% {
+    text-shadow: 
+      0 0 10px rgba(0, 255, 255, 0.8),
+      0 0 20px rgba(0, 255, 255, 0.5),
+      3px 3px 0 rgba(255, 0, 255, 0.6);
+  }
+  50% {
+    text-shadow: 
+      0 0 15px rgba(0, 255, 255, 1),
+      0 0 30px rgba(0, 255, 255, 0.7),
+      3px 3px 0 rgba(255, 0, 255, 0.8);
+  }
+}
+
+@keyframes scanline {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.app-main {
+  flex: 1;
+  background: transparent; // 移除預設背景，使用 body 的主題背景
+  padding: $spacing-lg 0;
+}
+
+.app-footer {
+  padding: $spacing-lg 0;
+  text-align: center;
+  color: #00ffff;
+  font-size: $font-size-sm;
+  border-top: 2px solid #ff00ff;
+  background: rgba(26, 26, 46, 0.8);
+  backdrop-filter: blur(10px);
+  text-shadow: 0 0 8px rgba(0, 255, 255, 0.6);
+  position: relative;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(90deg, 
+      transparent,
+      #00ffff 30%,
+      #ff00ff 70%,
+      transparent
+    );
+  }
+}

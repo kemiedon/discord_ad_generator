@@ -10,7 +10,8 @@
   &__label {
     font-size: $font-size-sm;
     font-weight: $font-weight-medium;
-    color: $text-secondary;
+    color: #29adff;
+    font-family: 'Noto Sans TC', sans-serif;
   }
   
   &__required {
@@ -32,6 +33,7 @@
   border-radius: $radius-md;
   color: $text-primary;
   font-size: $font-size-base;
+  font-family: 'Noto Sans TC', sans-serif;
   cursor: pointer;
   transition: all $transition-base;
   
@@ -39,7 +41,8 @@
   appearance: none;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23B5BAC1' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
-  background-position: right $spacing-md center;
+  background-position: right 10px center;
+  background-size: 12px 12px;
   padding-right: $spacing-2xl;
   
   option {
@@ -64,5 +67,65 @@
     &:focus {
       border-color: $error;
     }
+  }
+  
+  // Retrowave 主題樣式
+  background: #222034;
+  border: 3px solid #313638;
+  border-radius: 0;
+  color: #fff;
+  font-family: 'Noto Sans TC', 'Courier New', monospace;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2329adff' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 12px 12px;
+  
+  // Option 樣式 - 瀏覽器原生選單無法完全自訂，僅能設定基本顏色
+  option {
+    background: #222034;
+    color: #fff;
+    padding: 10px;
+    font-weight: normal;
+    
+    // 選中狀態 - 有些瀏覽器支援
+    &:checked {
+      background: linear-gradient(#29adff, #29adff);
+      color: #1a1a2e;
+      font-weight: bold;
+    }
+  }
+  
+  &:focus {
+    outline: none;
+    border-color: #f8b700;
+    background: #222034;
+    box-shadow: 0 0 0 3px rgba(248, 183, 0, 0.1);
+  }
+}
+
+// 針對 WebKit 瀏覽器 (Chrome, Safari) 的下拉選單樣式
+@supports (-webkit-appearance: none) {
+  select option {
+    background-color: #222034;
+    color: #ffffff;
+  }
+  
+  select option:checked {
+    background-color: #29adff;
+    background: linear-gradient(#29adff, #29adff);
+    color: #1a1a2e;
+  }
+}
+
+// 針對 Firefox 的下拉選單樣式
+@-moz-document url-prefix() {
+  select option {
+    background-color: #222034;
+    color: #ffffff;
+  }
+  
+  select option:checked {
+    background-color: #29adff;
+    color: #1a1a2e;
   }
 }

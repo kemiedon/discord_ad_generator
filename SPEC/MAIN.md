@@ -1961,17 +1961,20 @@ const publishToDiscord = async (
 **新增功能**
 
 1. **Skill Hub Logo 整合**
+
    - 將 logo 圖檔移至 `public/` 資料夾統一管理
    - 移除首頁 logo 的 padding，圖片填滿容器
    - 設定 favicon 為 `favicon.ico`
    - 新增 Open Graph 和 Twitter Card meta 標籤供社群分享使用
 
 2. **Logo 參考圖片自動載入**
+
    - 生成圖片時自動從 `/skill_hub_icon.svg` 載入 logo
    - 將 logo 作為參考圖片傳給 Gemini API
    - 修改 Prompt 要求在 "Skill Hub" 文字前顯示 logo 圖示
 
 3. **Discord 訊息優化**
+
    - 根據活動主題智能生成 2 行吸引人的描述
    - 採用親切對話式語氣（「這週我們來聊聊」、「有興趣的同學別忘了」）
    - 支援 AI、設計、職涯、創意思考、程式開發等主題分類
@@ -1992,11 +1995,13 @@ const publishToDiscord = async (
 **技術改進**
 
 1. **靜態資源管理**
+
    - 統一將 SVG logo 放置於 `public/` 資料夾
    - 使用絕對路徑 `/skill_hub_icon.svg` 確保開發和生產環境一致
    - 修正 App.jsx 中的 logo import 路徑問題
 
 2. **SEO 與社群分享優化**
+
    - 新增完整的 Open Graph meta 標籤（Facebook/LinkedIn）
    - 新增 Twitter Card meta 標籤
    - 設定網站完整 URL：`https://discord-ad.skillhub365.com/`

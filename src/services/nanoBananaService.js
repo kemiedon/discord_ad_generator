@@ -4,14 +4,18 @@ import axios from 'axios'
  * 呼叫 Gemini (nano-banana pro) API 生成圖片
  * @param {string} prompt - 圖片生成提示詞
  * @param {Object} [referenceImage] - 參考圖片物件 { data: base64字串, mimeType: MIME類型 } (可選)
+ * @param {Object} [logoImage] - Logo 圖片物件 { data: base64字串, mimeType: MIME類型 } (可選)
  * @param {Function} [onProgress] - 進度回調函數 (current, total, status)
  * @returns {Promise<string[]>} - 生成的圖片 base64 Data URL 陣列
  */
-export const generateImages = async (prompt, referenceImage, onProgress) => {
+export const generateImages = async (prompt, referenceImage, logoImage, onProgress) => {
   console.log('開始生成圖片...')
   console.log('Prompt:', prompt)
   if (referenceImage) {
     console.log('✅ 使用參考圖片，MIME類型:', referenceImage.mimeType)
+  }
+  if (logoImage) {
+    console.log('✅ 使用 Logo 圖片，MIME類型:', logoImage.mimeType)
   }
 
   try {
@@ -51,7 +55,19 @@ export const generateImages = async (prompt, referenceImage, onProgress) => {
           // 構建請求內容 - 正確的格式
           const parts = []
           
-          // 如果有參考圖片，先加入參考圖片
+          // 如果有 Logo 圖片，先加入 Logo
+          if (logoImage) {
+            console.log('加入 Logo 圖片到請求中...')
+            parts.push({
+              inlineData: {
+                mimeType: logoImage.mimeType,
+                data: logoImage.data
+              }
+            })
+            console.log('✅ Logo 圖片已加入請求')
+          }
+          
+          // 如果有參考圖片，再加入參考圖片
           if (referenceImage) {
             console.log('加入參考圖片到請求中...')
             parts.push({

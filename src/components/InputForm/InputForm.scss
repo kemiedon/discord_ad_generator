@@ -2,17 +2,25 @@
 @use '../../styles/mixins' as *;
 
 .input-form {
-  @include card;
+  background: rgba(49, 54, 56, 0.5);
+  border: 3px solid #313638;
+  border-radius: 0;
+  padding: $spacing-lg;
+  transition: all $transition-base;
+  position: relative;
+  overflow: hidden;
   
   &__title {
     margin-bottom: $spacing-lg;
-    color: $text-primary;
+    color: #f8b700;
     font-size: $font-size-2xl;
-    border-bottom: 2px solid $discord-purple;
+    font-family: 'Noto Sans TC', sans-serif;
+    font-weight: 700;
+    border-bottom: 3px solid #29adff;
     padding-bottom: $spacing-sm;
+    position: relative;
   }
   
-  // 在手機版調整間距
   @include mobile {
     padding: $spacing-md;
   }
