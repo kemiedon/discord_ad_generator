@@ -27,24 +27,39 @@ ${points.map(p => `  * ${p}`).join('\n')}`
 Create a Discord event promotional image in ${selectedStyle}.
 
 Content Requirements:
-- Main Title: "${topic}" (bold, sans-serif font, adjust size if text is long, no line breaks)
-- Brand: Display "Skill Hub" text with the logo icon (skill_hub_icon.svg) positioned directly to the left of the text. The logo should be small and proportional to the text size, maintaining a cohesive appearance.
-- Subtitle: "Kemie, Ayn, 聖博老師の學習殿堂"
-- Event Time: "${date} 晚上9:00-10:00" (clear and prominent)
+- Main Title: "${topic}" (bold, prominent, sans-serif font, centered or top-aligned)
+- Brand: "Skill Hub" text with logo icon (the logo image is provided separately). Position the logo to the left of "Skill Hub" text. The logo should be small and proportional to the text size.
+- Subtitle: "Kemie, Ayn, 聖博老師の學習殿堂" (smaller font, below brand)
+- Event Time: "${date} 晚上9:00-10:00" (clear, bold, easy to read)
 ${keyPointsSection}
 
-CRITICAL - Text Readability:
-- Background MUST include blurred areas or gradient color blocks for text placement
-- If background is complex, add a semi-transparent rectangular overlay:
-  * Use white overlay (rgba(255,255,255,0.8)) for dark backgrounds
-  * Use black overlay (rgba(0,0,0,0.7)) for light backgrounds
-- Text color must contrast well with background (white on dark, black on light)
-- Ensure all text is clearly readable
+CRITICAL - Text Readability Requirements:
+1. Background Design:
+   - MUST include dedicated text area with solid or gradient background
+   - Create a semi-transparent panel/card for text overlay
+   - Use blur effect or vignette to create contrast
+
+2. Text Overlay Strategy:
+   - For dark backgrounds: Add white/light semi-transparent panel (rgba(255,255,255,0.85))
+   - For light backgrounds: Add dark semi-transparent panel (rgba(0,0,0,0.75))
+   - Ensure minimum contrast ratio of 4.5:1 between text and background
+
+3. Typography:
+   - Title: Bold, high contrast, shadow effect if needed
+   - All text must be sharp and clearly legible
+   - Use drop shadows or outlines for text if background is complex
+
+4. Layout:
+   - Reserve 30-40% of image space for text content
+   - Text should be on a stable, readable background
+   - Avoid placing text over busy patterns or complex images
 
 Image Specifications:
-- Size: 1080x1080px
-- Format: Square, suitable for Discord and social media
+- Dimensions: 1080x1080px (square format)
+- Format: High quality PNG/JPEG
 - Style: ${selectedStyle}
+- Target Platform: Discord, optimized for social media display
+- Ensure professional, clean, and readable design
   `.trim();
 
   return prompt;

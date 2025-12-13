@@ -26,7 +26,7 @@ export const generateImages = async (prompt, referenceImage, logoImage, onProgre
     }
 
     console.log('呼叫 Gemini 圖片生成 API...')
-    console.log('模型: gemini-3-pro-image-preview')
+    console.log('模型: gemini-2.0-flash-exp')
 
     // 呼叫 API 生成 4 張圖片
     const imageUrls = []
@@ -52,22 +52,13 @@ export const generateImages = async (prompt, referenceImage, logoImage, onProgre
             await new Promise(resolve => setTimeout(resolve, 1000 * retryCount))
           }
 
-          // 構建請求內容 - 正確的格式
+          // 構建請求內容 - 優化順序：先文字，再參考圖，最後 Logo
           const parts = []
           
-          // 如果有 Logo 圖片，先加入 Logo
-          if (logoImage) {
-            console.log('加入 Logo 圖片到請求中...')
-            parts.push({
-              inlineData: {
-                mimeType: logoImage.mimeType,
-                data: logoImage.data
-              }
-            })
-            console.log('✅ Logo 圖片已加入請求')
-          }
+          // 先加入文字提示詞（最重要）
+          parts.push({ text: prompt })
           
-          // 如果有參考圖片，再加入參考圖片
+          // 如果有參考圖片，加入參考圖片（風格參考）
           if (referenceImage) {
             console.log('加入參考圖片到請求中...')
             parts.push({
@@ -79,8 +70,17 @@ export const generateImages = async (prompt, referenceImage, logoImage, onProgre
             console.log('✅ 參考圖片已加入請求')
           }
           
-          // 加入文字提示詞
-          parts.push({ text: prompt })
+          // 如果有 Logo 圖片，最後加入 Logo（品牌標識）
+          if (logoImage) {
+            console.log('加入 Skill Hub Logo 到請求中...')
+            parts.push({
+              inlineData: {
+                mimeType: logoImage.mimeType,
+                data: logoImage.data
+              }
+            })
+            console.log('✅ Logo 圖片已加入請求')
+          }
 
           // 構建請求體
           const requestBody = {
@@ -91,9 +91,9 @@ export const generateImages = async (prompt, referenceImage, logoImage, onProgre
 
           console.log('發送 API 請求...')
 
-          // 呼叫 REST API
+          // 呼叫 Gemini REST API
           const response = await axios.post(
-            `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-pro-image-preview:generateContent?key=${apiKey}`,
+            `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${apiKey}`,
             requestBody,
             {
               headers: {
@@ -177,6 +177,7 @@ export const generateImages = async (prompt, referenceImage, logoImage, onProgre
     if (error.response) {
       console.error('API 錯誤詳情:', error.response.data)
       console.error('HTTP 狀態碼:', error.response.status)
+      console.error('完整回應:', JSON.stringify(error.response.data, null, 2))
       
       switch (error.response.status) {
         case 503:
