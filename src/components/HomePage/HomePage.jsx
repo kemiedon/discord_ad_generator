@@ -32,7 +32,6 @@ function HomePage() {
     const inputFormRef = useRef(null)
 
     const handleGenerate = async (formData) => {
-        console.log('開始生成流程，表單資料：', formData)
         setIsGenerating(true)
         setGeneratedImages([]) // 清空之前的圖片
         setCurrentFormData(formData) // 儲存表單資料
@@ -50,7 +49,6 @@ function HomePage() {
             if (formData.referenceImage) {
                 setProgressStatus('正在處理參考圖片...')
                 setProgressMessage('正在處理參考圖片...')
-                console.log('正在處理參考圖片...')
                 
                 // 直接在瀏覽器中讀取檔案並轉換為 base64
                 referenceImageBase64 = await new Promise((resolve, reject) => {
@@ -66,15 +64,12 @@ function HomePage() {
                     reader.onerror = reject
                     reader.readAsDataURL(formData.referenceImage)
                 })
-                console.log('✅ 參考圖片處理成功')
             }
             
-            // 1.5. 加入 Skill Hub logo 作為額外的參考圖片
+            // 1.5. 載入 Logo 圖片 (logo.png)
             let logoImageBase64 = null
             try {
-                // 使用絕對路徑，開發和生產環境都能正常工作
-                const logoUrl = '/skill_hub_icon.svg'
-                console.log('正在載入 Skill Hub logo:', logoUrl)
+                const logoUrl = '/logo.png'
                 
                 const logoResponse = await fetch(logoUrl)
                 if (logoResponse.ok) {
@@ -85,45 +80,39 @@ function HomePage() {
                             const base64 = e.target.result.split(',')[1]
                             resolve({
                                 data: base64,
-                                mimeType: 'image/svg+xml'
+                                mimeType: logoBlob.type
                             })
                         }
                         reader.onerror = reject
                         reader.readAsDataURL(logoBlob)
                     })
-                    console.log('✅ Skill Hub logo 載入成功')
                 }
             } catch (error) {
-                console.warn('無法載入 Skill Hub logo，將繼續生成:', error)
+                // Logo 載入失敗不影響生成流程
             }
 
             // 2. 構建 Prompt
             setProgressStatus('正在構建生成提示詞...')
             setProgressMessage('正在構建生成提示詞...')
-            const prompt = buildPrompt(formData)
-            console.log('構建的 Prompt：', prompt)
+            const prompt = buildPrompt(formData, !!referenceImageBase64)
 
             // 3. 呼叫圖片生成 API (附帶進度回調)
             setProgressStatus('正在生成圖片...')
             setProgressMessage('正在生成圖片，請稍候（可能需要 30-60 秒）...')
-            console.log('正在生成圖片...')
             
             const images = await generateImages(prompt, referenceImageBase64, logoImageBase64, (current, total, status) => {
                 setProgressCurrent(current)
                 setProgressTotal(total)
                 setProgressStatus(status)
             })
-            console.log('圖片生成成功：', images)
 
             // 4. 壓縮圖片
             setProgressStatus('正在壓縮圖片...')
             setProgressMessage('正在壓縮圖片...')
-            console.log('開始壓縮圖片...')
             const compressedImages = await compressImages(images, {
                 maxSizeMB: 0.8,
                 maxWidthOrHeight: 1920
             })
-            console.log('圖片壓縮完成')
 
             setGeneratedImages(compressedImages)
             setProgressMessage('✅ 圖片生成成功！')
@@ -140,18 +129,18 @@ function HomePage() {
                 await saveHistory({
                     topic: formData.topic,
                     date: formData.date,
+                    startTime: formData.startTime,
+                    endTime: formData.endTime,
                     points: formData.points,
                     style: formData.style,
                     thumbnail: thumbnail, // 只保存縮圖
                     imageCount: compressedImages.length,
                     webhookUrl: formData.webhookUrl
                 })
-                console.log('✅ 已保存到歷史記錄')
                 setProgressStatus('✅ 已保存到歷史記錄')
                 setProgressMessage('✅ 已保存到歷史記錄')
             } catch (error) {
-                console.warn('保存歷史記錄失敗:', error)
-                // 不顯示錯誤,避免打擾使用者
+                // 保存歷史記錄失敗不影響主流程
             }
         } catch (error) {
             console.error('生成流程失敗：', error)
@@ -163,8 +152,6 @@ function HomePage() {
     }
 
     const handlePublish = (selectedImages) => {
-        console.log('準備發布圖片到 Discord：', selectedImages)
-        
         if (!currentFormData) {
             toast.error('找不到表單資料，請重新生成圖片')
             return
@@ -189,7 +176,6 @@ function HomePage() {
     }
 
     const handleConfirmPublish = async (customMessage) => {
-        console.log('確認發布到 Discord')
         setIsPublishing(true)
         const toastId = toast.loading('正在發布到 Discord...')
 
@@ -216,7 +202,6 @@ function HomePage() {
 
     // 從歷史記錄載入資料
     const handleLoadHistory = (formData) => {
-        console.log('載入歷史記錄:', formData)
         setLoadedFormData(formData)
         // 清空之前生成的圖片
         setGeneratedImages([])

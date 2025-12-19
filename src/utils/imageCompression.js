@@ -49,12 +49,8 @@ export const compressImage = async (dataUrl, options = {}) => {
       useWebWorker = true
     } = options
 
-    console.log('開始壓縮圖片...')
-    
     // 將 Data URL 轉換為 File
     const file = dataUrlToFile(dataUrl)
-    const originalSizeKB = (file.size / 1024).toFixed(2)
-    console.log(`原始檔案大小: ${originalSizeKB} KB`)
 
     // 壓縮圖片
     const compressedFile = await imageCompression(file, {
@@ -63,10 +59,6 @@ export const compressImage = async (dataUrl, options = {}) => {
       useWebWorker,
       initialQuality: 0.8
     })
-
-    const compressedSizeKB = (compressedFile.size / 1024).toFixed(2)
-    console.log(`壓縮後大小: ${compressedSizeKB} KB`)
-    console.log(`壓縮率: ${((1 - compressedFile.size / file.size) * 100).toFixed(1)}%`)
 
     // 轉回 Data URL
     const compressedDataUrl = await fileToDataUrl(compressedFile)
@@ -86,8 +78,6 @@ export const compressImage = async (dataUrl, options = {}) => {
  * @returns {Promise<string[]>} - 壓縮後的圖片 Data URL 陣列
  */
 export const compressImages = async (dataUrls, options = {}) => {
-  console.log(`開始批次壓縮 ${dataUrls.length} 張圖片...`)
-  
   const compressedImages = await Promise.all(
     dataUrls.map((dataUrl, index) => 
       compressImage(dataUrl, options).catch(error => {
@@ -97,7 +87,6 @@ export const compressImages = async (dataUrls, options = {}) => {
     )
   )
   
-  console.log('批次壓縮完成')
   return compressedImages
 }
 
@@ -108,8 +97,6 @@ export const compressImages = async (dataUrls, options = {}) => {
  */
 export const generateThumbnail = async (dataUrl) => {
   try {
-    console.log('生成縮圖...')
-    
     // 將 Data URL 轉換為 File
     const file = dataUrlToFile(dataUrl)
     
@@ -120,9 +107,6 @@ export const generateThumbnail = async (dataUrl) => {
       useWebWorker: true,
       initialQuality: 0.6
     })
-
-    const thumbnailSizeKB = (thumbnailFile.size / 1024).toFixed(2)
-    console.log(`縮圖大小: ${thumbnailSizeKB} KB`)
 
     // 轉回 Data URL
     const thumbnailDataUrl = await fileToDataUrl(thumbnailFile)

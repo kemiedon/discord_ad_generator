@@ -19,6 +19,8 @@ function InputForm({ onGenerate, isGenerating, initialData }) {
     const [formData, setFormData] = useState({
         topic: '',
         date: '',
+        startTime: '21:00', // 預設開始時間 9:00 PM
+        endTime: '22:00',   // 預設結束時間 10:00 PM
         points: '',
         style: '',
         referenceImage: null,
@@ -36,6 +38,8 @@ function InputForm({ onGenerate, isGenerating, initialData }) {
             setFormData({
                 topic: initialData.topic || '',
                 date: initialData.date || '',
+                startTime: initialData.startTime || '21:00',
+                endTime: initialData.endTime || '22:00',
                 points: Array.isArray(initialData.points) 
                     ? initialData.points.join('\n') 
                     : (initialData.points || ''),
@@ -120,6 +124,19 @@ function InputForm({ onGenerate, isGenerating, initialData }) {
             newErrors.date = '請選擇活動日期'
         }
 
+        if (!formData.startTime) {
+            newErrors.startTime = '請選擇開始時間'
+        }
+
+        if (!formData.endTime) {
+            newErrors.endTime = '請選擇結束時間'
+        }
+
+        // 驗證結束時間是否晚於開始時間
+        if (formData.startTime && formData.endTime && formData.startTime >= formData.endTime) {
+            newErrors.endTime = '結束時間必須晚於開始時間'
+        }
+
         // 重點項目改為非必填
         // if (!formData.points.trim()) {
         //     newErrors.points = '請輸入至少一個重點項目'
@@ -182,6 +199,38 @@ function InputForm({ onGenerate, isGenerating, initialData }) {
                 {errors.date && <span className="input-group__error">{errors.date}</span>}
             </div>
 
+            <div className="input-form__time-group">
+                <div className="input-group">
+                    <label className="input-group__label">
+                        開始時間
+                        <span className="input-group__required">*</span>
+                    </label>
+                    <input
+                        type="time"
+                        className={`input ${errors.startTime ? 'input--error' : ''}`}
+                        value={formData.startTime}
+                        onChange={(e) => handleChange('startTime', e.target.value)}
+                        disabled={isGenerating}
+                    />
+                    {errors.startTime && <span className="input-group__error">{errors.startTime}</span>}
+                </div>
+
+                <div className="input-group">
+                    <label className="input-group__label">
+                        結束時間
+                        <span className="input-group__required">*</span>
+                    </label>
+                    <input
+                        type="time"
+                        className={`input ${errors.endTime ? 'input--error' : ''}`}
+                        value={formData.endTime}
+                        onChange={(e) => handleChange('endTime', e.target.value)}
+                        disabled={isGenerating}
+                    />
+                    {errors.endTime && <span className="input-group__error">{errors.endTime}</span>}
+                </div>
+            </div>
+
             <TextArea
                 label="重點項目（可選）"
                 placeholder="每行一個重點項目&#10;例如：&#10;學習 AI 基礎知識&#10;實作圖片生成&#10;分享經驗交流"
@@ -203,7 +252,7 @@ function InputForm({ onGenerate, isGenerating, initialData }) {
             />
 
             <FileUpload
-                label="參考圖片（可選）"
+                label="風格參考圖片（可選）"
                 onFileSelect={(file) => handleChange('referenceImage', file)}
                 error={errors.referenceImage}
                 disabled={isGenerating}

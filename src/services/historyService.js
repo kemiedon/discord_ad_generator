@@ -8,6 +8,8 @@ const COLLECTION_NAME = 'generation_history'
  * @param {Object} record - 生成記錄
  * @param {string} record.topic - 主題
  * @param {string} record.date - 日期
+ * @param {string} record.startTime - 開始時間
+ * @param {string} record.endTime - 結束時間
  * @param {string[]} record.points - 重點項目
  * @param {string} record.style - 風格
  * @param {string} record.thumbnail - 縮圖 Data URL
@@ -17,11 +19,11 @@ const COLLECTION_NAME = 'generation_history'
  */
 export const saveHistory = async (record) => {
   try {
-    console.log('保存生成記錄...')
-    
     const historyData = {
       topic: record.topic || '',
       date: record.date || '',
+      startTime: record.startTime || '',
+      endTime: record.endTime || '',
       points: record.points || [],
       style: record.style || '',
       thumbnail: record.thumbnail || '',
@@ -39,7 +41,6 @@ export const saveHistory = async (record) => {
     const writePromise = addDoc(collection(db, COLLECTION_NAME), historyData)
     
     const docRef = await Promise.race([writePromise, timeoutPromise])
-    console.log('✅ 記錄已保存，ID:', docRef.id)
     
     return docRef.id
   } catch (error) {
@@ -65,8 +66,6 @@ export const saveHistory = async (record) => {
  */
 export const getHistory = async (maxRecords = 50) => {
   try {
-    console.log('讀取歷史記錄...')
-    
     const q = query(
       collection(db, COLLECTION_NAME),
       orderBy('timestamp', 'desc'),
@@ -83,7 +82,6 @@ export const getHistory = async (maxRecords = 50) => {
       })
     })
     
-    console.log(`✅ 讀取了 ${records.length} 筆記錄`)
     return records
   } catch (error) {
     console.error('讀取記錄失敗:', error)
@@ -98,11 +96,7 @@ export const getHistory = async (maxRecords = 50) => {
  */
 export const deleteHistory = async (recordId) => {
   try {
-    console.log('刪除記錄:', recordId)
-    
     await deleteDoc(doc(db, COLLECTION_NAME, recordId))
-    
-    console.log('✅ 記錄已刪除')
   } catch (error) {
     console.error('刪除記錄失敗:', error)
     throw new Error(`刪除失敗: ${error.message}`)
@@ -115,8 +109,6 @@ export const deleteHistory = async (recordId) => {
  */
 export const clearAllHistory = async () => {
   try {
-    console.log('清空所有記錄...')
-    
     const querySnapshot = await getDocs(collection(db, COLLECTION_NAME))
     const deletePromises = []
     
@@ -126,7 +118,6 @@ export const clearAllHistory = async () => {
     
     await Promise.all(deletePromises)
     
-    console.log(`✅ 已刪除 ${deletePromises.length} 筆記錄`)
     return deletePromises.length
   } catch (error) {
     console.error('清空記錄失敗:', error)

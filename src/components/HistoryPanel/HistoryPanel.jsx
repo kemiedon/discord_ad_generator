@@ -32,12 +32,12 @@ function HistoryPanel({ isOpen, onClose, onLoadHistory }) {
 
     // 載入指定記錄
     const handleLoad = (record) => {
-        console.log('載入記錄:', record)
-        
         // 重建表單資料
         const formData = {
             topic: record.topic,
             date: record.date,
+            startTime: record.startTime || '21:00',
+            endTime: record.endTime || '22:00',
             points: record.points,
             style: record.style,
             webhookUrl: record.webhookUrl
@@ -167,6 +167,9 @@ function HistoryPanel({ isOpen, onClose, onLoadHistory }) {
                                 <div className="history-item__meta">
                                     <span className="history-item__date">
                                         📅 {record.date}
+                                        {record.startTime && record.endTime && (
+                                            <> {record.startTime}-{record.endTime}</>
+                                        )}
                                     </span>
                                     <span className="history-item__style">
                                         {styleLabels[record.style] || record.style}

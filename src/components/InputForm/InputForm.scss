@@ -20,6 +20,26 @@
     padding-bottom: $spacing-sm;
     position: relative;
   }
+
+  &__time-group {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: $spacing-md;
+    margin-bottom: $spacing-md;
+
+    @include mobile {
+      grid-template-columns: 1fr;
+      gap: 0;
+    }
+
+    .input-group {
+      margin-bottom: 0;
+
+      @include mobile {
+        margin-bottom: $spacing-md;
+      }
+    }
+  }
   
   @include mobile {
     padding: $spacing-md;

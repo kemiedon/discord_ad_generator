@@ -1,9 +1,10 @@
 /**
  * 構建 nano-banana pro API 的 Prompt
  * @param {Object} data - 表單資料
+ * @param {boolean} hasReferenceImage - 是否有參考圖片
  * @returns {string} - 構建好的 Prompt
  */
-export const buildPrompt = (data) => {
+export const buildPrompt = (data, hasReferenceImage = false) => {
   const { topic, date, points, style } = data;
 
   // 風格關鍵字映射
@@ -15,6 +16,11 @@ export const buildPrompt = (data) => {
   };
 
   const selectedStyle = styleKeywords[style] || style;
+
+  // 如果有參考圖片，添加風格參考說明
+  const styleReferenceNote = hasReferenceImage 
+    ? '\n\nSTYLE REFERENCE NOTE:\n- A reference image is provided for style inspiration\n- Use the reference image to inspire the overall visual style, color palette, composition, and artistic direction\n- DO NOT copy or composite elements from the reference image\n- Instead, learn from its aesthetic qualities: lighting, mood, color harmony, artistic treatment\n- Create an original design that captures the essence and feeling of the reference style'
+    : '';
 
   // 構建重點項目區塊（只有當有重點項目時才顯示）
   const keyPointsSection = points && points.length > 0 
@@ -60,6 +66,7 @@ Image Specifications:
 - Style: ${selectedStyle}
 - Target Platform: Discord, optimized for social media display
 - Ensure professional, clean, and readable design
+${styleReferenceNote}
   `.trim();
 
   return prompt;

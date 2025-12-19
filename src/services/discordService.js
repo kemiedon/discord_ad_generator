@@ -65,12 +65,12 @@ const buildDiscordMessage = (formData) => {
   // 防止 formData 為 null 或 undefined
   if (!formData) {
     const today = new Date().toISOString().split('T')[0]
-    return `@everyone\n\n【活動通知】\n📅 ${today} 晚上9:00-10:00\n\n💬 歡迎大家一起來討論、交流AI開發經驗，一起共同成長！`
+    return `@everyone\n\n【活動通知】\n📅 ${today} 21:00-22:00\n\n💬 歡迎大家一起來討論、交流AI開發經驗，一起共同成長！`
   }
 
-  const { topic = '', date = '', points = [] } = formData
+  const { topic = '', date = '', startTime = '21:00', endTime = '22:00', points = [] } = formData
 
-  let message = `@everyone\n\n【活動通知】${topic}\n📅 ${date} 晚上9:00-10:00\n`
+  let message = `@everyone\n\n【活動通知】${topic}\n📅 ${date} ${startTime}-${endTime}\n`
 
   // 只有當有重點項目時才加入
   if (points && Array.isArray(points) && points.length > 0) {
@@ -98,10 +98,6 @@ const buildDiscordMessage = (formData) => {
  * @returns {Promise<Object>} - 發布結果
  */
 export const publishToDiscord = async (imageUrls, formData, webhookUrl, customMessage = null) => {
-  console.log('開始發布到 Discord...')
-  console.log('圖片數量:', imageUrls.length)
-  console.log('Webhook URL:', webhookUrl ? '已設定' : '未設定')
-
   if (!webhookUrl) {
     throw new Error('請先設定 Discord Webhook URL')
   }
@@ -113,7 +109,6 @@ export const publishToDiscord = async (imageUrls, formData, webhookUrl, customMe
   try {
     // 使用自訂訊息或構建預設訊息
     const messageContent = customMessage || buildDiscordMessage(formData)
-    console.log('訊息內容:', messageContent)
 
     // 準備 FormData
     const formDataToSend = new FormData()
@@ -128,16 +123,12 @@ export const publishToDiscord = async (imageUrls, formData, webhookUrl, customMe
       formDataToSend.append(`file${index}`, blob, fileName)
     })
 
-    console.log('發送請求到 Discord Webhook...')
-
     // 發送到 Discord Webhook
     const response = await axios.post(webhookUrl, formDataToSend, {
       headers: {
         'Content-Type': 'multipart/form-data'
       }
     })
-
-    console.log('✅ 發布成功！', response.status)
 
     return {
       success: true,
@@ -149,9 +140,6 @@ export const publishToDiscord = async (imageUrls, formData, webhookUrl, customMe
     console.error('Discord 發布失敗:', error)
     
     if (error.response) {
-      console.error('HTTP 狀態碼:', error.response.status)
-      console.error('錯誤詳情:', error.response.data)
-      
       if (error.response.status === 404) {
         throw new Error('Discord Webhook URL 無效，請檢查設定')
       } else if (error.response.status === 401) {

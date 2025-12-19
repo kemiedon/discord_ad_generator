@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 /**
- * 呼叫 Gemini (nano-banana pro) API 生成圖片
+ * 呼叫 Gemini 3 Pro Image Preview API 生成圖片
  * @param {string} prompt - 圖片生成提示詞
  * @param {Object} [referenceImage] - 參考圖片物件 { data: base64字串, mimeType: MIME類型 } (可選)
  * @param {Object} [logoImage] - Logo 圖片物件 { data: base64字串, mimeType: MIME類型 } (可選)
@@ -9,15 +9,6 @@ import axios from 'axios'
  * @returns {Promise<string[]>} - 生成的圖片 base64 Data URL 陣列
  */
 export const generateImages = async (prompt, referenceImage, logoImage, onProgress) => {
-  console.log('開始生成圖片...')
-  console.log('Prompt:', prompt)
-  if (referenceImage) {
-    console.log('✅ 使用參考圖片，MIME類型:', referenceImage.mimeType)
-  }
-  if (logoImage) {
-    console.log('✅ 使用 Logo 圖片，MIME類型:', logoImage.mimeType)
-  }
-
   try {
     const apiKey = import.meta.env.VITE_NANO_BANANA_API_KEY
 
@@ -25,17 +16,12 @@ export const generateImages = async (prompt, referenceImage, logoImage, onProgre
       throw new Error('缺少 VITE_NANO_BANANA_API_KEY 環境變數')
     }
 
-    console.log('呼叫 Gemini 圖片生成 API...')
-    console.log('模型: gemini-2.0-flash-exp')
-
     // 呼叫 API 生成 4 張圖片
     const imageUrls = []
     const numberOfImages = 4
     const maxRetries = 2 // 每張圖片最多重試 2 次
 
     for (let i = 0; i < numberOfImages; i++) {
-      console.log(`正在生成第 ${i + 1} 張圖片...`)
-      
       // 更新進度
       if (onProgress) {
         onProgress(i, numberOfImages, `正在生成第 ${i + 1} 張圖片...`)
@@ -47,53 +33,50 @@ export const generateImages = async (prompt, referenceImage, logoImage, onProgre
       while (retryCount <= maxRetries && !success) {
         try {
           if (retryCount > 0) {
-            console.log(`重試第 ${retryCount} 次...`)
             // 等待一段時間後重試 (指數退避)
             await new Promise(resolve => setTimeout(resolve, 1000 * retryCount))
           }
 
-          // 構建請求內容 - 優化順序：先文字，再參考圖，最後 Logo
-          const parts = []
+          // 構建請求內容 - Gemini 3 Pro Image Preview 格式
+          const contents = []
           
-          // 先加入文字提示詞（最重要）
-          parts.push({ text: prompt })
+          // 先加入文字 prompt
+          contents.push({ text: prompt })
           
-          // 如果有參考圖片，加入參考圖片（風格參考）
-          if (referenceImage) {
-            console.log('加入參考圖片到請求中...')
-            parts.push({
-              inlineData: {
-                mimeType: referenceImage.mimeType,
-                data: referenceImage.data
-              }
-            })
-            console.log('✅ 參考圖片已加入請求')
-          }
-          
-          // 如果有 Logo 圖片，最後加入 Logo（品牌標識）
-          if (logoImage) {
-            console.log('加入 Skill Hub Logo 到請求中...')
-            parts.push({
+          // 如果有 Logo，先加入 Logo（API 只支援 JPEG/PNG，不支援 SVG）
+          if (logoImage && logoImage.mimeType !== 'image/svg+xml') {
+            contents.push({
               inlineData: {
                 mimeType: logoImage.mimeType,
                 data: logoImage.data
               }
             })
-            console.log('✅ Logo 圖片已加入請求')
+          }
+          
+          // 如果有參考圖片，加入參考圖片（注意：API 只支援 JPEG/PNG，不支援 SVG）
+          if (referenceImage && referenceImage.mimeType !== 'image/svg+xml') {
+            contents.push({
+              inlineData: {
+                mimeType: referenceImage.mimeType,
+                data: referenceImage.data
+              }
+            })
           }
 
           // 構建請求體
           const requestBody = {
-            contents: [{
-              parts: parts
-            }]
+            contents: [{ parts: contents }],
+            generationConfig: {
+              responseModalities: ['IMAGE'],
+              imageConfig: {
+                aspectRatio: '1:1',
+                imageSize: '2K'
+              }
+            }
           }
 
-          console.log('發送 API 請求...')
-
-          // 呼叫 Gemini REST API
           const response = await axios.post(
-            `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${apiKey}`,
+            `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-pro-image-preview:generateContent?key=${apiKey}`,
             requestBody,
             {
               headers: {
@@ -115,7 +98,6 @@ export const generateImages = async (prompt, referenceImage, logoImage, onProgre
                 const dataUrl = `data:${mimeType};base64,${imageData}`
                 
                 imageUrls.push(dataUrl)
-                console.log(`✅ 第 ${i + 1} 張圖片生成成功`)
                 
                 // 更新進度
                 if (onProgress) {
@@ -136,18 +118,13 @@ export const generateImages = async (prompt, referenceImage, logoImage, onProgre
           retryCount++
           
           if (error.response?.status === 503) {
-            console.warn(`⚠️ API 服務暫時無法使用 (503)`)
             if (retryCount <= maxRetries) {
-              console.log(`將在 ${retryCount} 秒後重試...`)
-            }
-          } else if (error.response?.status === 429) {
-            console.warn(`⚠️ API 請求頻率過高 (429)`)
-            if (retryCount <= maxRetries) {
-              console.log(`將在 ${retryCount * 2} 秒後重試...`)
               await new Promise(resolve => setTimeout(resolve, 1000 * retryCount))
             }
-          } else {
-            console.error(`生成第 ${i + 1} 張圖片時發生錯誤:`, error.message)
+          } else if (error.response?.status === 429) {
+            if (retryCount <= maxRetries) {
+              await new Promise(resolve => setTimeout(resolve, 1000 * retryCount * 2))
+            }
           }
           
           // 如果已經用完所有重試次數，拋出錯誤
@@ -166,7 +143,6 @@ export const generateImages = async (prompt, referenceImage, logoImage, onProgre
       throw new Error('API 沒有返回任何圖片')
     }
 
-    console.log(`🎉 圖片生成完成，共 ${imageUrls.length} 張`)
     return imageUrls
 
   } catch (error) {
@@ -175,10 +151,6 @@ export const generateImages = async (prompt, referenceImage, logoImage, onProgre
     let errorMessage = '圖片生成失敗'
     
     if (error.response) {
-      console.error('API 錯誤詳情:', error.response.data)
-      console.error('HTTP 狀態碼:', error.response.status)
-      console.error('完整回應:', JSON.stringify(error.response.data, null, 2))
-      
       switch (error.response.status) {
         case 503:
           errorMessage = 'API 服務暫時無法使用，請稍後再試'
