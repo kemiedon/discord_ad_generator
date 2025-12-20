@@ -31,8 +31,10 @@ coverage
 *.log
 test-*.mjs
 test-*.js
+token-usage-log.json
 
 # 生成的圖片（測試用）
 discord-ad-*.png
 gemini-*.png
 test-*.png
+dist/
